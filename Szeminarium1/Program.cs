@@ -118,15 +118,14 @@ namespace Szeminarium1
             float[] vertexArray = new float[] {
                 -0.5f, -0.5f, 0.0f,
                 +0.5f, -0.5f, 0.0f,
-                 0.0f, +0.5f, 0.0f,
-                 1f, 1f, 0f
+                 
             };
 
             float[] colorArray = new float[] {
-                1.0f, 0.0f, 0.0f, 1.0f,
-                0.0f, 1.0f, 0.0f, 1.0f,
-                0.0f, 0.0f, 1.0f, 1.0f,
-                1.0f, 0.0f, 0.0f, 1.0f,
+                -25.0f, 124.0f, 0.0f, -411.0f,
+                1240.0f, 6124.0f, 1340.0f, -3411.0f,
+                -1000.0f, 0.0f, 1.0f, 1.0f,
+                +551.0f, 0.0f, 0.0f, -1.0f,
             };
 
             uint[] indexArray = new uint[] {
@@ -143,30 +142,22 @@ namespace Szeminarium1
             error = Gl.GetError();
             if (error != GLEnum.NoError)
             {
-                Console.WriteLine($"OpenGL error at {"BufferData/Bindbuffer torlese"}: {error}");
+                Console.WriteLine($"OpenGL error at {"hiba"}: {error}");
             }
             Gl.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, null);
+            Gl.EnableVertexAttribArray(0);
             error = Gl.GetError();
             if (error != GLEnum.NoError)
             {
-                Console.WriteLine($"OpenGL error at {"EnableVertex valtoztatas/torles"}: {error}");
+                Console.WriteLine($"OpenGL error at {"hiba"}: {error}");
             }
 
 
             uint colors = Gl.GenBuffer();
             Gl.BindBuffer(GLEnum.ArrayBuffer, colors);
-            error = Gl.GetError();
-            if (error != GLEnum.NoError)
-            {
-                Console.WriteLine($"OpenGL error at {"BufferData/Bindbuffer torlese"}: {error}");
-            }
+            Gl.BufferData(GLEnum.ArrayBuffer, (ReadOnlySpan<float>)colorArray.AsSpan(), GLEnum.StaticDraw);
             Gl.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 0, null);
-            Gl.EnableVertexAttribArray(3);
-            error = Gl.GetError();
-            if (error != GLEnum.NoError)
-            {
-                Console.WriteLine($"OpenGL error at {"EnableVertex valtoztatas/torles"}: {error}");
-            }
+            Gl.EnableVertexAttribArray(1);
 
             uint indices = Gl.GenBuffer();
             Gl.BindBuffer(GLEnum.ElementArrayBuffer, indices);
