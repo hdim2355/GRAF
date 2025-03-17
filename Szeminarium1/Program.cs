@@ -140,20 +140,33 @@ namespace Szeminarium1
             uint vertices = Gl.GenBuffer();
             Gl.BindBuffer(GLEnum.ArrayBuffer, vertices);
             Gl.BufferData(GLEnum.ArrayBuffer, (ReadOnlySpan<float>)vertexArray.AsSpan(), GLEnum.StaticDraw);
-            Gl.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, null);
-            Gl.EnableVertexAttribArray(21);
             error = Gl.GetError();
             if (error != GLEnum.NoError)
             {
-                Console.WriteLine($"OpenGL error at {"hiba"}: {error}");
+                Console.WriteLine($"OpenGL error at {"BufferData/Bindbuffer torlese"}: {error}");
+            }
+            Gl.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, null);
+            error = Gl.GetError();
+            if (error != GLEnum.NoError)
+            {
+                Console.WriteLine($"OpenGL error at {"EnableVertex valtoztatas/torles"}: {error}");
             }
 
 
             uint colors = Gl.GenBuffer();
             Gl.BindBuffer(GLEnum.ArrayBuffer, colors);
-            Gl.BufferData(GLEnum.ArrayBuffer, (ReadOnlySpan<float>)colorArray.AsSpan(), GLEnum.StaticDraw);
+            error = Gl.GetError();
+            if (error != GLEnum.NoError)
+            {
+                Console.WriteLine($"OpenGL error at {"BufferData/Bindbuffer torlese"}: {error}");
+            }
             Gl.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 0, null);
-            Gl.EnableVertexAttribArray(1);
+            Gl.EnableVertexAttribArray(3);
+            error = Gl.GetError();
+            if (error != GLEnum.NoError)
+            {
+                Console.WriteLine($"OpenGL error at {"EnableVertex valtoztatas/torles"}: {error}");
+            }
 
             uint indices = Gl.GenBuffer();
             Gl.BindBuffer(GLEnum.ElementArrayBuffer, indices);
