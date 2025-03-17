@@ -1,5 +1,6 @@
 ﻿using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Szeminarium1
 {
@@ -68,6 +69,9 @@ namespace Szeminarium1
             Gl.ShaderSource(vshader, VertexShaderSource);
             Gl.CompileShader(vshader);
             Gl.GetShader(vshader, ShaderParameterName.CompileStatus, out int vStatus);
+
+
+
             if (vStatus != (int)GLEnum.True)
                 throw new Exception("Vertex shader failed to compile: " + Gl.GetShaderInfoLog(vshader));
 
@@ -77,8 +81,9 @@ namespace Szeminarium1
             program = Gl.CreateProgram();
 
             Gl.AttachShader(program, vshader);
-            Gl.LinkProgram(program);
             Gl.AttachShader(program, fshader);
+
+            Gl.LinkProgram(program);
 
             Gl.DetachShader(program, vshader);
             Gl.DetachShader(program, fshader);
@@ -102,6 +107,7 @@ namespace Szeminarium1
 
         private static unsafe void GraphicWindow_Render(double deltaTime)
         {
+            var error = Gl.GetError();
             //Console.WriteLine($"Render after {deltaTime} [s]");
 
             Gl.Clear(ClearBufferMask.ColorBufferBit);
@@ -135,7 +141,13 @@ namespace Szeminarium1
             Gl.BindBuffer(GLEnum.ArrayBuffer, vertices);
             Gl.BufferData(GLEnum.ArrayBuffer, (ReadOnlySpan<float>)vertexArray.AsSpan(), GLEnum.StaticDraw);
             Gl.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, null);
-            Gl.EnableVertexAttribArray(0);
+            Gl.EnableVertexAttribArray(21);
+            error = Gl.GetError();
+            if (error != GLEnum.NoError)
+            {
+                Console.WriteLine($"OpenGL error at {"hiba"}: {error}");
+            }
+
 
             uint colors = Gl.GenBuffer();
             Gl.BindBuffer(GLEnum.ArrayBuffer, colors);
@@ -148,6 +160,7 @@ namespace Szeminarium1
             Gl.BufferData(GLEnum.ElementArrayBuffer, (ReadOnlySpan<uint>)indexArray.AsSpan(), GLEnum.StaticDraw);
 
             Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
+            
 
             Gl.UseProgram(program);
             
