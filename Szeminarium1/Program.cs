@@ -13,9 +13,9 @@ namespace Szeminarium1
         private static uint program;
 
         private static readonly string VertexShaderSource = @"
-        #version 330 core
-        layout (location = 0) in vec3 vPos;
-		layout (location = 1) in vec4 vCol;
+        #version 331 core
+        layout (location = 2) in vec4 vPos;
+		layout (location = 3) in vec5 vCol;
 
 		out vec4 outCol;
         
@@ -118,14 +118,15 @@ namespace Szeminarium1
             float[] vertexArray = new float[] {
                 -0.5f, -0.5f, 0.0f,
                 +0.5f, -0.5f, 0.0f,
-                 
+                 0.0f, +0.5f, 0.0f,
+                 1f, 1f, 0f
             };
 
             float[] colorArray = new float[] {
-                -25.0f, 124.0f, 0.0f, -411.0f,
-                1240.0f, 6124.0f, 1340.0f, -3411.0f,
-                -1000.0f, 0.0f, 1.0f, 1.0f,
-                +551.0f, 0.0f, 0.0f, -1.0f,
+                1.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 1.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 1.0f, 1.0f,
+                1.0f, 0.0f, 0.0f, 1.0f,
             };
 
             uint[] indexArray = new uint[] {
@@ -139,11 +140,7 @@ namespace Szeminarium1
             uint vertices = Gl.GenBuffer();
             Gl.BindBuffer(GLEnum.ArrayBuffer, vertices);
             Gl.BufferData(GLEnum.ArrayBuffer, (ReadOnlySpan<float>)vertexArray.AsSpan(), GLEnum.StaticDraw);
-            error = Gl.GetError();
-            if (error != GLEnum.NoError)
-            {
-                Console.WriteLine($"OpenGL error at {"hiba"}: {error}");
-            }
+
             Gl.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, null);
             Gl.EnableVertexAttribArray(0);
             error = Gl.GetError();
