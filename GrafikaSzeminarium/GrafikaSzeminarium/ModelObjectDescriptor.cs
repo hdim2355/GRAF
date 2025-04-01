@@ -1,4 +1,5 @@
-﻿using Silk.NET.OpenGL;
+﻿using Silk.NET.Maths;
+using Silk.NET.OpenGL;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace GrafikaSzeminarium
 
         private GL Gl;
 
-        public unsafe static ModelObjectDescriptor CreateCube(GL Gl)
+        public unsafe static ModelObjectDescriptor CreateCube(GL Gl,int x,int y,int z)
         {
             uint vao = Gl.GenVertexArray();
             Gl.BindVertexArray(vao);
@@ -33,65 +34,109 @@ namespace GrafikaSzeminarium
                 0.48f, 0.48f, 0.48f,
                 0.48f, 0.48f, -0.48f,
                 -0.48f, 0.48f, -0.48f,
-
+                //teteje
                 -0.48f, 0.48f, 0.48f,
                 -0.48f, -0.48f, 0.48f,
                 0.48f, -0.48f, 0.48f,
                 0.48f, 0.48f, 0.48f,
-
+                //jobb oldal
                 -0.48f, 0.48f, 0.48f,
                 -0.48f, 0.48f, -0.48f,
                 -0.48f, -0.48f, -0.48f,
                 -0.48f, -0.48f, 0.48f,
-
+                //hatso
                 -0.48f, -0.48f, 0.48f,
                 0.48f, -0.48f, 0.48f,
                 0.48f, -0.48f, -0.48f,
                 -0.48f, -0.48f, -0.48f,
-
+                //also
                 0.48f, 0.48f, -0.48f,
                 -0.48f, 0.48f, -0.48f,
                 -0.48f, -0.48f, -0.48f,
                 0.48f, -0.48f, -0.48f,
-
+                //bal oldali
                 0.48f, 0.48f, 0.48f,
                 0.48f, 0.48f, -0.48f,
                 0.48f, -0.48f, -0.48f,
                 0.48f, -0.48f, 0.48f,
-
+                //szemben
             };
 
             float[] colorArray = new float[] {
-                1.0f, 0.0f, 0.0f, 1.0f,
-                1.0f, 0.0f, 0.0f, 1.0f,
-                1.0f, 0.0f, 0.0f, 1.0f,
-                1.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
 
-                0.0f, 1.0f, 0.0f, 1.0f,
-                0.0f, 1.0f, 0.0f, 1.0f,
-                0.0f, 1.0f, 0.0f, 1.0f,
-                0.0f, 1.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
 
-                0.0f, 0.0f, 1.0f, 1.0f,
-                0.0f, 0.0f, 1.0f, 1.0f,
-                0.0f, 0.0f, 1.0f, 1.0f,
-                0.0f, 0.0f, 1.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
 
-                1.0f, 0.0f, 1.0f, 1.0f,
-                1.0f, 0.0f, 1.0f, 1.0f,
-                1.0f, 0.0f, 1.0f, 1.0f,
-                1.0f, 0.0f, 1.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
 
-                0.0f, 1.0f, 1.0f, 1.0f,
-                0.0f, 1.0f, 1.0f, 1.0f,
-                0.0f, 1.0f, 1.0f, 1.0f,
-                0.0f, 1.0f, 1.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
 
-                1.0f, 1.0f, 0.0f, 1.0f,
-                1.0f, 1.0f, 0.0f, 1.0f,
-                1.0f, 1.0f, 0.0f, 1.0f,
-                1.0f, 1.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 0.0f, 1.0f,
+
             };
+
+            if (y == 1)
+            {
+                for(int i = 0; i < 16; i++)
+                {
+                        colorArray[i] =((i%4==0)? 1.0f :0.0f);
+                }
+            }
+            if (z == 1)
+            {
+                for (int i = 0; i < 16; i++)
+                {
+                    colorArray[(1*16)+i] = ((i % 4 == 1) ? 1.0f : 0.0f);
+                }
+            }
+            if (x == -1)
+            {
+                for (int i = 0; i < 16; i++)
+                {
+                    colorArray[(2 * 16) + i] = ((i % 4 == 2) ? 1.0f : 0.0f);
+                }
+            }
+            if (y == -1)
+            {
+                for (int i = 0; i < 16; i++)
+                {
+                    colorArray[(3*16)+i] = ((i % 4 == 0 || i % 4 ==2) ? 1.0f : 0.0f);
+                }
+            }
+            if (z == -1)
+            {
+                for (int i = 0; i < 16; i++)
+                {
+                    colorArray[(4 * 16) + i] = ((i % 4 == 1 || i % 4 == 2) ? 1.0f : 0.0f);
+                }
+            }
+            if (x == 1)
+            {
+                for (int i = 0; i < 16; i++)
+                {
+                    colorArray[(5 * 16) + i] = ((i % 4 == 1 || i % 4 == 0) ? 1.0f : 0.0f);
+                }
+            }
 
             uint[] indexArray = new uint[] {
                 0, 1, 2,
@@ -171,5 +216,6 @@ namespace GrafikaSzeminarium
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
     }
 }

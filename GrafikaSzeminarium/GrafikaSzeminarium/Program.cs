@@ -91,10 +91,17 @@ namespace GrafikaSzeminarium
                 keyboard.KeyDown += Keyboard_KeyDown;
             }
 
-            
-            for (int i = 0; i < 27; i++)
+
+            int db = 0;
+            for (int i = -1; i <= 1; i++)
             {
-                cube[i] = ModelObjectDescriptor.CreateCube(Gl);
+                for(int j = -1; j <= 1; j++)
+                {
+                    for(int z = -1; z <= 1; z++)
+                    {
+                        cube[db++] = ModelObjectDescriptor.CreateCube(Gl,i,j,z);
+                    }
+                }
             }
 
             Gl.ClearColor(System.Drawing.Color.White);
