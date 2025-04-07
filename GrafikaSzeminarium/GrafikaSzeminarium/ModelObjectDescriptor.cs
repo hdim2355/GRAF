@@ -21,7 +21,6 @@ namespace GrafikaSzeminarium
         public uint IndexArrayLength { get; private set; }
 
         private GL Gl;
-
         public unsafe static ModelObjectDescriptor CreateCube(GL Gl,int x,int y,int z)
         {
             uint vao = Gl.GenVertexArray();
@@ -216,6 +215,8 @@ namespace GrafikaSzeminarium
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+        
 
     }
 }

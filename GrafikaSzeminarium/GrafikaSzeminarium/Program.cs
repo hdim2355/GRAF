@@ -1,4 +1,5 @@
-﻿using Silk.NET.Input;
+﻿using System.Numerics;
+using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
@@ -165,7 +166,7 @@ namespace GrafikaSzeminarium
                 case Key.Up:
                     camera.DecreaseDistance();
                     break;
-                case Key.U:
+                case Key.S:
                     camera.IncreaseZXAngle();
                     break;
                 case Key.D:
@@ -173,6 +174,11 @@ namespace GrafikaSzeminarium
                     break;
                 case Key.Space:
                     cubeArrangementModel.AnimationEnabled = !cubeArrangementModel.AnimationEnabled;
+                    cubeArrangementModel.signum = 1;
+                    break;
+                case Key.Backspace:
+                    cubeArrangementModel.AnimationEnabled = !cubeArrangementModel.AnimationEnabled;
+                    cubeArrangementModel.signum = -1;
                     break;
             }
         }
@@ -197,25 +203,59 @@ namespace GrafikaSzeminarium
             var projectionMatrix = Matrix4X4.CreatePerspectiveFieldOfView<float>((float)(Math.PI / 2), 1024f / 768f, 0.1f, 100f);
             SetMatrix(projectionMatrix, ProjectionMatrixVariableName);
 
-
-            //var modelMatrixCenterCube = Matrix4X4.CreateScale((float)cubeArrangementModel.CenterCubeScale);
-            //SetMatrix(modelMatrixCenterCube, ModelMatrixVariableName);
-            //DrawModelObject(cube);
-
             int db = 0;
+
+            Matrix4X4<float> rotationX = Matrix4X4.CreateRotationX((float)(Math.PI * cubeArrangementModel.RightSideCubeRotation / 180.0));
+            Matrix4X4<float> rotationY = Matrix4X4.CreateRotationY((float)(Math.PI * cubeArrangementModel.RightSideCubeRotation / 180.0));
+            Matrix4X4<float> rotationZ = Matrix4X4.CreateRotationY((float)(Math.PI * cubeArrangementModel.RightSideCubeRotation / 180.0));
             for (int i = -1; i <= 1; i++)
             {
                 for (int j = -1; j <= 1; j++)
                 {
                     for (int z = -1; z <= 1; z++)
                     {
-                        Matrix4X4<float> diamondScale = Matrix4X4.CreateScale((float)cubeArrangementModel.CenterCubeScale);
-                        Matrix4X4<float> rotx = Matrix4X4.CreateRotationX((float)Math.PI);
-                        Matrix4X4<float> rotz = Matrix4X4.CreateRotationZ((float)Math.PI);
-                        Matrix4X4<float> roty = Matrix4X4.CreateRotationY((float)Math.PI);
-                        Matrix4X4<float> trans = Matrix4X4.CreateTranslation((float)i, j, z);
-                        Matrix4X4<float> dimondCubeModelMatrix = diamondScale * rotx * rotz * roty * trans;
-                        SetMatrix(dimondCubeModelMatrix, ModelMatrixVariableName);
+                        Matrix4X4<float> modelMatrix;
+
+                        bool rotateRightSide = (i == 1); 
+                        bool rotateLeftSide = (i == -1);
+                        bool rotateTopSide = (j == 1); 
+                        bool rotateBottomSide = (j == -1);
+                        bool rotateFrontSide = (z == 1); 
+                        bool rotateBackSide = (z == -1); 
+
+                        if (rotateRightSide)
+                        {
+                            modelMatrix = RotateCubeFace(1, 0, 0, cubeArrangementModel.RightSideCubeRotation, i, j, z);
+                        }
+                        else if (rotateLeftSide)
+                        {
+                            modelMatrix = RotateCubeFace(-1, 0, 0, cubeArrangementModel.LeftSideCubeRotation, i, j, z);
+                        }
+                        else if (rotateTopSide)
+                        {
+                            modelMatrix = RotateCubeFace(0, 1, 0, cubeArrangementModel.TopSideCubeRotation, i, j, z);
+                        }
+                        else if (rotateBottomSide)
+                        {
+                            modelMatrix = RotateCubeFace(0, -1, 0, cubeArrangementModel.BottomSideCubeRotation, i, j, z);
+                        }
+                        else if (rotateFrontSide)
+                        {
+                            modelMatrix = RotateCubeFace(0, 0, 1, cubeArrangementModel.FrontSideCubeRotation, i, j, z);
+                        }
+                        else if (rotateBackSide)
+                        {
+                            modelMatrix = RotateCubeFace(0, 0, -1, cubeArrangementModel.BackSideCubeRotation, i, j, z);
+                        }
+                        else
+                        {
+                            modelMatrix = Matrix4X4.CreateScale((float)cubeArrangementModel.CenterCubeScale);
+                        }
+
+                        Matrix4X4<float> translation = Matrix4X4.CreateTranslation((float)i, j, z);
+                        Matrix4X4<float> finalModelMatrix = translation * modelMatrix;
+
+                        SetMatrix(finalModelMatrix, ModelMatrixVariableName);
                         DrawModelObject(cube[db++]);
                     }
                 }
@@ -223,6 +263,22 @@ namespace GrafikaSzeminarium
 
         }
 
+        private static Matrix4X4<float> RotateCubeFace(int axisX, int axisY, int axisZ, double rotationAngle, int i, int j, int z)
+        {
+            Matrix4X4<float> translateToOrigin = Matrix4X4.CreateTranslation((float)-axisX, -axisY, -axisZ);
+
+            Matrix4X4<float> rotation;
+            if (axisX != 0)
+                rotation = Matrix4X4.CreateRotationX((float)(Math.PI * rotationAngle / 180.0));
+            else if (axisY != 0)
+                rotation = Matrix4X4.CreateRotationY((float)(Math.PI * rotationAngle / 180.0));
+            else
+                rotation = Matrix4X4.CreateRotationZ((float)(Math.PI * rotationAngle / 180.0));
+
+            Matrix4X4<float> translateBack = Matrix4X4.CreateTranslation((float)axisX, axisY, axisZ);
+
+            return translateBack * rotation * translateToOrigin;
+        }
         private static unsafe void DrawModelObject(ModelObjectDescriptor modelObject)
         {
             Gl.BindVertexArray(modelObject.Vao);

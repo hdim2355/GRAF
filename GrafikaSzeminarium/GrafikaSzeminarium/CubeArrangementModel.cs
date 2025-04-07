@@ -33,6 +33,20 @@ namespace Szeminarium
         /// </summary>
         public double DiamondCubeGlobalYAngle { get; private set; } = 0;
 
+        public double RightSideCubeRotation { get; private set; } = 1;
+
+        public double LeftSideCubeRotation { get; private set; } = 1;
+
+        public double TopSideCubeRotation { get; private set; } = 1;
+
+        public double BottomSideCubeRotation { get; private set; } = 1;
+
+        public double FrontSideCubeRotation { get; private set; } = 1;
+
+        public double BackSideCubeRotation { get; private set; } = 1;
+
+        public int signum = 1;
+
         internal void AdvanceTime(double deltaTime)
         {
             // we do not advance the simulation when animation is stopped
@@ -42,13 +56,14 @@ namespace Szeminarium
             // set a simulation time
             Time += deltaTime;
 
-            // lets produce an oscillating scale in time
-            CenterCubeScale = 1 + 0.2 * Math.Sin(1.5 * Time);
-
-            // the rotation angle is time x angular velocity;
             DiamondCubeLocalAngle = Time * 10;
 
             DiamondCubeGlobalYAngle = -Time;
+
+            RightSideCubeRotation += deltaTime * 100 * signum;
+            //if (RightSideCubeRotation >= 90) 
+            //    RightSideCubeRotation = 90;
         }
+
     }
 }
