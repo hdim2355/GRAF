@@ -41,6 +41,11 @@ namespace GrafikaSzeminarium
 
         private static float shininess = 50;
 
+        private static Vector3 ambient = new Vector3(0.1f);
+        private static Vector3 diffuse = new Vector3(0.3f);
+        private static Vector3 specular = new Vector3(0.6f);
+        private static Vector3 lightColor = new Vector3(1f, 1f, 1f);
+
         private static uint program;
 
         static void Main(string[] args)
@@ -189,14 +194,14 @@ namespace GrafikaSzeminarium
 
             Gl.UseProgram(program);
 
-            SetUniform3(LightColorVariableName, new Vector3(1f, 1f, 1f));
+            SetUniform3(LightColorVariableName,lightColor);
             SetUniform3(LightPositionVariableName, new Vector3(0f, 1.2f, 0f));
             SetUniform3(ViewPositionVariableName, new Vector3(camera.Position.X, camera.Position.Y, camera.Position.Z));
             SetUniform1(ShinenessVariableName, shininess);
 
-            SetUniform3(AmbientStrengthVariableName, new Vector3(0.05375f,0.05f,0.06625f));
-            SetUniform3(DiffuseStrengthVariableName, new Vector3(0.18275f,0.17f,0.22525f));
-            SetUniform3(SpecularStrengthVariableName, new Vector3(0.332741f,0.328634f,0.346435f));
+            SetUniform3(AmbientStrengthVariableName, ambient);
+            SetUniform3(DiffuseStrengthVariableName, diffuse);
+            SetUniform3(SpecularStrengthVariableName, specular);
 
             var viewMatrix = Matrix4X4.CreateLookAt(camera.Position, camera.Target, camera.UpVector);
             SetMatrix(viewMatrix, ViewMatrixVariableName);
@@ -222,6 +227,28 @@ namespace GrafikaSzeminarium
             //ImGuiNET.ImGui.ShowDemoWindow();
             ImGuiNET.ImGui.Begin("Lighting", ImGuiNET.ImGuiWindowFlags.AlwaysAutoResize | ImGuiNET.ImGuiWindowFlags.NoCollapse);
             ImGuiNET.ImGui.SliderFloat("Shininess", ref shininess, 5, 100);
+            ImGuiNET.ImGui.Text("Ambient");
+            ImGuiNET.ImGui.SliderFloat("Ambient R", ref ambient.X, 0f, 1f);
+            ImGuiNET.ImGui.SliderFloat("Ambient G", ref ambient.Y, 0f, 1f);
+            ImGuiNET.ImGui.SliderFloat("Ambient B", ref ambient.Z, 0f, 1f);
+
+            ImGuiNET.ImGui.Text("Diffuse");
+            ImGuiNET.ImGui.SliderFloat("Diffuse R", ref diffuse.X, 0f, 1f);
+            ImGuiNET.ImGui.SliderFloat("Diffuse G", ref diffuse.Y, 0f, 1f);
+            ImGuiNET.ImGui.SliderFloat("Diffuse B", ref diffuse.Z, 0f, 1f);
+
+            ImGuiNET.ImGui.Text("Specular");
+            ImGuiNET.ImGui.SliderFloat("Specular R", ref specular.X, 0f, 1f);
+            ImGuiNET.ImGui.SliderFloat("Specular G", ref specular.Y, 0f, 1f);
+            ImGuiNET.ImGui.SliderFloat("Specular B", ref specular.Z, 0f, 1f);
+
+            
+            ImGuiNET.ImGui.Text("Light Color");
+            ImGuiNET.ImGui.SliderFloat("Light R", ref lightColor.X, 0f, 1f);
+            ImGuiNET.ImGui.SliderFloat("Light G", ref lightColor.Y, 0f, 1f);
+            ImGuiNET.ImGui.SliderFloat("Light B", ref lightColor.Z, 0f, 1f);
+
+
             ImGuiNET.ImGui.End();
 
             imGuiController.Render();
