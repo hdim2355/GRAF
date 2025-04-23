@@ -126,7 +126,7 @@ namespace Szeminarium1
             //    2, 1, 3
             //};
 
-            /*
+            
             float[] vertexArray = new float[] {
                 0.0f, +0.5f, 0.0f,//0
                 0.0f, -0.5f, 0.0f,//1
@@ -173,10 +173,10 @@ namespace Szeminarium1
                 9,6,11,
                 9,6,10,
             };
-            */
+            
 
 
-            float[] vertexArray = new float[] {
+            /*float[] vertexArray = new float[] {
                  0.0f, +0.1f, 0.0f,//0
                 0.0f, -0.1f, 0.0f,//1
                 -0.11f, -0.04f, 0.0f,//2
@@ -491,7 +491,7 @@ namespace Szeminarium1
 
                 104,105,106,
                 104,105,107,
-            };
+            };*/
 
 
             uint vertices = Gl.GenBuffer();
