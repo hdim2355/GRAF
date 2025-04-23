@@ -194,9 +194,9 @@ namespace GrafikaSzeminarium
             SetUniform3(ViewPositionVariableName, new Vector3(camera.Position.X, camera.Position.Y, camera.Position.Z));
             SetUniform1(ShinenessVariableName, shininess);
 
-            SetUniform3(AmbientStrengthVariableName, new Vector3(0.2125f,0.1275f,0.054f));
-            SetUniform3(DiffuseStrengthVariableName, new Vector3(0.714f,0.4284f,0.18144f));
-            SetUniform3(SpecularStrengthVariableName, new Vector3(0.393548f,0.271906f,0.166721f));
+            SetUniform3(AmbientStrengthVariableName, new Vector3(0.0215f,0.1745f,0.0215f));
+            SetUniform3(DiffuseStrengthVariableName, new Vector3(0.07568f,0.61424f,0.07568f));
+            SetUniform3(SpecularStrengthVariableName, new Vector3(0.633f,0.727811f,0.633f));
 
             var viewMatrix = Matrix4X4.CreateLookAt(camera.Position, camera.Target, camera.UpVector);
             SetMatrix(viewMatrix, ViewMatrixVariableName);
