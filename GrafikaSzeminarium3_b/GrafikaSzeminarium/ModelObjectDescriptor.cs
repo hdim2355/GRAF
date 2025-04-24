@@ -152,7 +152,6 @@ namespace GrafikaSzeminarium
 
         public void SetTopFaceColor(Vector4 color)
         {
-            // Top face = első 4 csúcs, azaz az első 16 float (4x RGBA)
             colorArray[0] = color.X;
             colorArray[1] = color.Y;
             colorArray[2] = color.Z;

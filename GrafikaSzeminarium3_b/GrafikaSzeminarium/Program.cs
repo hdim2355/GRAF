@@ -79,6 +79,7 @@ namespace GrafikaSzeminarium
 
         private static void GraphicWindow_Closing()
         {
+            cube2.Dispose();
             cube.Dispose();
             Gl.DeleteProgram(program);
         }
@@ -105,6 +106,7 @@ namespace GrafikaSzeminarium
             imGuiController = new ImGuiController(Gl, graphicWindow, inputContext);
 
             cube = ModelObjectDescriptor.CreateCube(Gl);
+            cube2= ModelObjectDescriptor.CreateCube(Gl); 
 
             Gl.ClearColor(System.Drawing.Color.White);
             
