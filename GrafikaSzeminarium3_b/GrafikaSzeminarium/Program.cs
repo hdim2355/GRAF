@@ -1,4 +1,5 @@
-﻿using Silk.NET.Input;
+﻿using ImGuiNET;
+using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.OpenGL.Extensions.ImGui;
@@ -19,6 +20,7 @@ namespace GrafikaSzeminarium
         private static ImGuiController imGuiController;
 
         private static ModelObjectDescriptor cube;
+        private static ModelObjectDescriptor cube2;
 
         private static CameraDescriptor camera = new CameraDescriptor();
 
@@ -45,6 +47,17 @@ namespace GrafikaSzeminarium
         private static Vector3 diffuse = new Vector3(0.3f);
         private static Vector3 specular = new Vector3(0.6f);
         private static Vector3 lightColor = new Vector3(1f, 1f, 1f);
+        private static string[] szinek = new[] { "Piros", "Zöld", "Kék", "Sárga", "Cian", "Magenta" };
+        private static Vector4[] szinErtekek = new[] {
+        new Vector4(1, 0, 0, 1),
+        new Vector4(0, 1, 0, 1),
+        new Vector4(0, 0, 1, 1),
+        new Vector4(1, 1, 0, 1),
+        new Vector4(0, 1, 1, 1),
+        new Vector4(1, 0, 1, 1)
+        };
+
+        private static int selectedIndex = 1;
 
         private static uint program;
 
@@ -209,7 +222,7 @@ namespace GrafikaSzeminarium
             var projectionMatrix = Matrix4X4.CreatePerspectiveFieldOfView<float>((float)(Math.PI / 2), 1024f / 768f, 0.1f, 100f);
             SetMatrix(projectionMatrix, ProjectionMatrixVariableName);
 
-
+            
             var modelMatrixCenterCube = Matrix4X4.CreateScale((float)cubeArrangementModel.CenterCubeScale);
             SetModelMatrix(modelMatrixCenterCube);
             DrawModelObject(cube);
@@ -222,7 +235,7 @@ namespace GrafikaSzeminarium
             Matrix4X4<float> rotGlobalY = Matrix4X4.CreateRotationY((float)cubeArrangementModel.DiamondCubeGlobalYAngle);
             Matrix4X4<float> dimondCubeModelMatrix = diamondScale * rotx * rotz * roty * trans * rotGlobalY;
             SetModelMatrix(dimondCubeModelMatrix);
-            DrawModelObject(cube);
+            DrawModelObject(cube2);
 
             //ImGuiNET.ImGui.ShowDemoWindow();
             ImGuiNET.ImGui.Begin("Lighting", ImGuiNET.ImGuiWindowFlags.AlwaysAutoResize | ImGuiNET.ImGuiWindowFlags.NoCollapse);
@@ -247,6 +260,13 @@ namespace GrafikaSzeminarium
             ImGuiNET.ImGui.SliderFloat("Light R", ref lightColor.X, 0f, 1f);
             ImGuiNET.ImGui.SliderFloat("Light G", ref lightColor.Y, 0f, 1f);
             ImGuiNET.ImGui.SliderFloat("Light B", ref lightColor.Z, 0f, 1f);
+
+
+            ImGui.Combo("Felső oldal színe", ref selectedIndex, szinek, szinek.Length);
+            {
+                cube.SetTopFaceColor(szinErtekek[selectedIndex]);
+                cube.UploadColors();
+            }
 
 
             ImGuiNET.ImGui.End();

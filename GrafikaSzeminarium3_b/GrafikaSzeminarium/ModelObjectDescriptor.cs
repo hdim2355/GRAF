@@ -3,6 +3,7 @@ using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,7 @@ namespace GrafikaSzeminarium
 
         private GL Gl;
 
+        private float[] colorArray= Array.Empty<float>();
         public unsafe static ModelObjectDescriptor CreateCube(GL Gl)
         {
             uint vao = Gl.GenVertexArray();
@@ -144,8 +146,39 @@ namespace GrafikaSzeminarium
             Gl.BufferData(GLEnum.ElementArrayBuffer, (ReadOnlySpan<uint>)indexArray.AsSpan(), GLEnum.StaticDraw);
             Gl.BindBuffer(GLEnum.ElementArrayBuffer, 0);
 
-            return new ModelObjectDescriptor() {Vao= vao, Vertices = vertices, Colors = colors, Indices = indices, IndexArrayLength = (uint)indexArray.Length, Gl = Gl};
+            return new ModelObjectDescriptor() {Vao= vao, Vertices = vertices, Colors = colors, Indices = indices, IndexArrayLength = (uint)indexArray.Length, Gl = Gl, colorArray = colorArray };
 
+        }
+
+        public void SetTopFaceColor(Vector4 color)
+        {
+            // Top face = első 4 csúcs, azaz az első 16 float (4x RGBA)
+            colorArray[0] = color.X;
+            colorArray[1] = color.Y;
+            colorArray[2] = color.Z;
+            colorArray[3] = color.W;
+
+            colorArray[4] = color.X;
+            colorArray[5] = color.Y;
+            colorArray[6] = color.Z;
+            colorArray[7] = color.W;
+
+            colorArray[8] = color.X;
+            colorArray[9] = color.Y;
+            colorArray[10] = color.Z;
+            colorArray[11] = color.W;
+
+            colorArray[12] = color.X;
+            colorArray[13] = color.Y;
+            colorArray[14] = color.Z;
+            colorArray[15] = color.W;
+        }
+
+        public void UploadColors()
+        {
+            Gl.BindBuffer(GLEnum.ArrayBuffer, Colors);
+            Gl.BufferSubData(GLEnum.ArrayBuffer, 0, (ReadOnlySpan<float>)colorArray.AsSpan());
+            Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
         }
 
         protected virtual void Dispose(bool disposing)
