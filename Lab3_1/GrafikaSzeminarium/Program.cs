@@ -18,7 +18,7 @@ namespace GrafikaSzeminarium
 
         private static ImGuiController imGuiController;
 
-        private static ModelObjectDescriptor cube;
+        private static ModelObjectDescriptor cube, barrelPanelAngledNormals;
 
         private static CameraDescriptor camera = new CameraDescriptor();
 
@@ -57,6 +57,7 @@ namespace GrafikaSzeminarium
 
         private static void GraphicWindow_Closing()
         {
+            barrelPanelAngledNormals.Dispose();
             cube.Dispose();
             Gl.DeleteProgram(program);
         }
@@ -83,6 +84,7 @@ namespace GrafikaSzeminarium
             imGuiController = new ImGuiController(Gl, graphicWindow, inputContext);
 
             cube = ModelObjectDescriptor.CreateCube(Gl);
+            barrelPanelAngledNormals = ModelObjectDescriptor.CreateBarrelPanelWithAngledNormals(Gl);
 
             Gl.ClearColor(System.Drawing.Color.White);
 
@@ -196,22 +198,6 @@ namespace GrafikaSzeminarium
             var projectionMatrix = Matrix4X4.CreatePerspectiveFieldOfView<float>((float)(Math.PI / 2), 1024f / 768f, 0.1f, 100f);
             SetMatrix(projectionMatrix, ProjectionMatrixVariableName);
 
-
-            //var modelMatrixCenterCube = Matrix4X4.CreateScale((float)cubeArrangementModel.CenterCubeScale);
-            //SetModelMatrix(modelMatrixCenterCube);
-            //DrawModelObject(cube);
-
-            //Matrix4X4<float> diamondScale = Matrix4X4.CreateScale(0.25f);
-            //Matrix4X4<float> rotx = Matrix4X4.CreateRotationX((float)Math.PI / 4f);
-            //Matrix4X4<float> rotz = Matrix4X4.CreateRotationZ((float)Math.PI / 4f);
-            //Matrix4X4<float> roty = Matrix4X4.CreateRotationY((float)cubeArrangementModel.DiamondCubeLocalAngle);
-            //Matrix4X4<float> trans = Matrix4X4.CreateTranslation(1f, 1f, 0f);
-            //Matrix4X4<float> rotGlobalY = Matrix4X4.CreateRotationY((float)cubeArrangementModel.DiamondCubeGlobalYAngle);
-            //Matrix4X4<float> dimondCubeModelMatrix = diamondScale * rotx * rotz * roty * trans * rotGlobalY;
-            //SetModelMatrix(dimondCubeModelMatrix);
-            //DrawModelObject(cube);
-
-
             const int NumPlanks = 18;
             const float plankWidth = 1.0f;  
             const float plankHeight = 2.0f;
@@ -240,6 +226,10 @@ namespace GrafikaSzeminarium
                 DrawModelObject(cube);
             }
 
+            DrawBarrel(barrelPanelAngledNormals, 0, -3.0f, plankWidth / 2 / (float)Math.Sin(halfAngle), numPlanks: 18, radiusCorrection: 0.96f, zScale: 0.05f);
+
+
+
             //ImGuiNET.ImGui.ShowDemoWindow();
             ImGuiNET.ImGui.Begin("Lighting", ImGuiNET.ImGuiWindowFlags.AlwaysAutoResize | ImGuiNET.ImGuiWindowFlags.NoCollapse);
             ImGuiNET.ImGui.SliderFloat("Shininess", ref shininess, 5, 100);
@@ -247,6 +237,31 @@ namespace GrafikaSzeminarium
 
             imGuiController.Render();
         }
+
+        private static void DrawBarrel(ModelObjectDescriptor panel, float offsetX, float offsetY, float radius, int numPlanks = 18, float radiusCorrection = 0.96f, float zScale = 0.05f)
+        {
+            float angleStep = 2 * MathF.PI / numPlanks;
+
+            float adjustedRadius = radius * radiusCorrection;
+
+            for (int i = 0; i < numPlanks; i++)
+            {
+                float angle = i * angleStep;
+
+                float x = MathF.Sin(angle) * adjustedRadius;
+                float z = MathF.Cos(angle) * adjustedRadius;
+
+                var translation = Matrix4X4.CreateTranslation(x + offsetX, offsetY, z);
+                var rotation = Matrix4X4.CreateRotationY(angle);
+                var scale = Matrix4X4.CreateScale(1.0f, 1.0f, zScale); // Vékonyság Z tengelyen
+
+                var modelMatrix = scale * rotation * translation;
+
+                SetModelMatrix(modelMatrix);
+                DrawModelObject(panel);
+            }
+        }
+
 
         private static unsafe void SetModelMatrix(Matrix4X4<float> modelMatrix)
         {

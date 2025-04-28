@@ -148,6 +148,71 @@ namespace GrafikaSzeminarium
 
         }
 
+        public unsafe static ModelObjectDescriptor CreateBarrelPanelWithAngledNormals(GL Gl)
+        {
+            uint vao = Gl.GenVertexArray();
+            Gl.BindVertexArray(vao);
+
+            // Calculate normal angles - 10 degrees outward as specified
+            float angleInRadians = (float)(10.0f * Math.PI / 180.0f);
+            float nx = (float)Math.Sin(angleInRadians);
+            float nz = (float)Math.Cos(angleInRadians);
+
+            // Width = 1, Height = 2 as specified
+            float[] vertexArray = new float[] {
+                // First vertex: bottom-left
+                -0.5f, 0.5f, 0.5f, nx, 0f, nz,
+                // Second vertex: bottom-right
+                -0.5f, -0.2f, 0.5f, nx, 0f, nz,
+                // Third vertex: top-right
+                0.5f, -0.2f, 0.5f, nx, 0f, nz,
+                // Fourth vertex: top-left
+                0.5f, 0.5f, 0.5f, nx, 0f, nz
+            };
+
+            float[] colorArray = new float[] {
+                0.0f, 1.0f, 0.0f, 1.0f,
+                0.0f, 1.0f, 0.0f, 1.0f,
+                0.0f, 1.0f, 0.0f, 1.0f,
+                0.0f, 1.0f, 0.0f, 1.0f,
+            };
+
+            uint[] indexArray = new uint[] {
+                0, 1, 2,
+                0, 2, 3
+            };
+
+            uint vertices = Gl.GenBuffer();
+            Gl.BindBuffer(GLEnum.ArrayBuffer, vertices);
+            Gl.BufferData(GLEnum.ArrayBuffer, (ReadOnlySpan<float>)vertexArray.AsSpan(), GLEnum.StaticDraw);
+
+            // 0 is position
+            // 2 is normals
+            uint offsetPos = 0;
+            uint offsetNormals = offsetPos + 3 * sizeof(float);
+            uint vertexSize = offsetNormals + 3 * sizeof(float);
+            Gl.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, vertexSize, (void*)offsetPos);
+            Gl.EnableVertexAttribArray(0);
+            Gl.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, true, vertexSize, (void*)offsetNormals);
+            Gl.EnableVertexAttribArray(2);
+            Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
+
+            uint colors = Gl.GenBuffer();
+            Gl.BindBuffer(GLEnum.ArrayBuffer, colors);
+            Gl.BufferData(GLEnum.ArrayBuffer, (ReadOnlySpan<float>)colorArray.AsSpan(), GLEnum.StaticDraw);
+            // 1 is color
+            Gl.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 0, null);
+            Gl.EnableVertexAttribArray(1);
+            Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
+
+            uint indices = Gl.GenBuffer();
+            Gl.BindBuffer(GLEnum.ElementArrayBuffer, indices);
+            Gl.BufferData(GLEnum.ElementArrayBuffer, (ReadOnlySpan<uint>)indexArray.AsSpan(), GLEnum.StaticDraw);
+            Gl.BindBuffer(GLEnum.ElementArrayBuffer, 0);
+
+            return new ModelObjectDescriptor() { Vao = vao, Vertices = vertices, Colors = colors, Indices = indices, IndexArrayLength = (uint)indexArray.Length, Gl = Gl };
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
