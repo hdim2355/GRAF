@@ -135,7 +135,7 @@ namespace Szeminarium1_24_03_05_2
 
             glCube = GlObject.CreateCube(Gl);
 
-            glTeapot = ObjectResourceReader.CreateObjectFromResource(Gl, "minicooper.obj");
+            glTeapot = ObjectResourceReader.CreateObjectFromResource(Gl, "power_lines.obj");
 
             LinkProgram();
         }

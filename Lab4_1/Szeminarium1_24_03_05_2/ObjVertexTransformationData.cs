@@ -29,6 +29,5 @@ namespace Szeminarium1_24_03_05_2
             Normal = newNormal;
             ++aggregatedFaceCount;
         }
-
     }
 }

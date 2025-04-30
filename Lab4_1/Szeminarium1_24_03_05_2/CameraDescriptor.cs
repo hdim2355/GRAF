@@ -13,7 +13,7 @@ namespace Szeminarium1_24_03_05_2
 
         const double DistanceScaleFactor = 1.1;
 
-        const double AngleChangeStepSize = Math.PI / 30 * 3;
+        const double AngleChangeStepSize = Math.PI / 30 * 4;
 
         /// <summary>
         /// Gets the position of the camera.

@@ -18,7 +18,7 @@
     <EmbeddedResource Include="Resources\diamond.obj" />
     <EmbeddedResource Include="Resources\dodecahedron.obj" />
     <EmbeddedResource Include="Resources\gourd.obj" />
-    <EmbeddedResource Include="Resources\minicooper.obj" />
+    <EmbeddedResource Include="Resources\power_lines.obj" />
   </ItemGroup>
 
   <ItemGroup>
