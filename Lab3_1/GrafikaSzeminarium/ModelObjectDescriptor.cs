@@ -161,13 +161,13 @@ namespace GrafikaSzeminarium
             // Width = 1, Height = 2 as specified
             float[] vertexArray = new float[] {
                 // First vertex: bottom-left
-                -0.5f, 0.5f, 0.5f, nx, 0f, nz,
+                -0.5f, 0.5f, 0.5f, -nx, 0f, nz,
                 // Second vertex: bottom-right
                 -0.5f, -0.2f, 0.5f, nx, 0f, nz,
                 // Third vertex: top-right
                 0.5f, -0.2f, 0.5f, nx, 0f, nz,
                 // Fourth vertex: top-left
-                0.5f, 0.5f, 0.5f, nx, 0f, nz
+                0.5f, 0.5f, 0.5f, -nx, 0f, nz
             };
 
             float[] colorArray = new float[] {
