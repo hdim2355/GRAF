@@ -42,17 +42,27 @@ namespace Szeminarium1_24_03_05_2
                             objVertices.Add(vertex);
                             break;
                         case "f":
-                            int[] face = new int[3];
-                            for (int i = 0; i < 3; ++i)
+                            if (lineData.Any(ld => ld.Contains("//")))
                             {
-                                var parts = lineData[i].Split(new[] { "//" }, StringSplitOptions.None);
-                                int vertexIndex = int.Parse(parts[0]) - 1;
-                                int normalIndex = int.Parse(parts[1]) - 1;
+                                int[] face = new int[3];
+                                for (int i = 0; i < 3; ++i)
+                                {
+                                    var parts = lineData[i].Split(new[] { "//" }, StringSplitOptions.None);
+                                    int vertexIndex = int.Parse(parts[0]) - 1;
+                                    int normalIndex = int.Parse(parts[1]) - 1;
 
-                                face[i] = vertexIndex + 1; 
-                                vertexNormalAssignments.Add((vertexIndex, normalIndex));
+                                    face[i] = vertexIndex + 1;
+                                    vertexNormalAssignments.Add((vertexIndex, normalIndex));
+                                }
+                                objFaces.Add(face);
                             }
-                            objFaces.Add(face);
+                            else
+                            {
+                                int[] face = new int[3];
+                                for (int i = 0; i < face.Length; ++i)
+                                    face[i] = int.Parse(lineData[i], CultureInfo.InvariantCulture);
+                                objFaces.Add(face);
+                            }
                             break;
                         case "vn":
                             float[] normal = new float[3];

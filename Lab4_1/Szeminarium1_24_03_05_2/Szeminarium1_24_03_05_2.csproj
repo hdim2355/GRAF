@@ -14,8 +14,11 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\teapot.obj" />
-    <EmbeddedResource Include="Resources\airboat.obj" />
     <EmbeddedResource Include="Resources\cube.obj" />
+    <EmbeddedResource Include="Resources\diamond.obj" />
+    <EmbeddedResource Include="Resources\dodecahedron.obj" />
+    <EmbeddedResource Include="Resources\gourd.obj" />
+    <EmbeddedResource Include="Resources\minicooper.obj" />
   </ItemGroup>
 
   <ItemGroup>
