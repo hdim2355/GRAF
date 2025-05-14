@@ -22,5 +22,6 @@ namespace Szeminarium1_24_03_05_2
             target = obj.Position;
             upVector = up;
         }
+
     }
 }

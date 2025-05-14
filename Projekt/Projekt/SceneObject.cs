@@ -41,7 +41,6 @@ namespace Projekt
                 -MathF.Cos(yaw) * MathF.Cos(pitch)
             );
         }
-
         public Vector3D<float> GetUpDirection()
         {
             float yaw = DegreesToRadians(Rotation.Y);

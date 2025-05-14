@@ -32,7 +32,7 @@ namespace Projekt
             Scale = new Vector3D<float>(0.4f, 0.4f, 0.4f)
         };
 
-        private static float planeSpeed = 4.0f;
+        private static float planeSpeed = 14.0f;
 
         private static bool moveForward = false;
         static void Main(string[] args)
@@ -58,16 +58,19 @@ namespace Projekt
             switch (key)
             {
                 case Key.Left:
-                    planeObject.Rotation.Y -= 5; 
+                    planeObject.Rotation.Y += 5; 
                     break;
                 case Key.Right:
-                    planeObject.Rotation.Y += 5;
+                    planeObject.Rotation.Y -= 5;
                     break;
                 case Key.Up:
-                    moveForward = true;
+                    planeObject.Rotation.X -= 5;
                     break;
                 case Key.Down:
-                    moveForward = false;
+                    planeObject.Rotation.X += 5;
+                    break;
+                case Key.Space:
+                    moveForward = !moveForward;
                     break;
                 case Key.S:
                     //camera.IncreaseZXAngle();
@@ -75,9 +78,6 @@ namespace Projekt
                 case Key.D:
                     //camera.DecreaseZXAngle();
                     Console.Write(camera.Position);
-                    break;
-                case Key.Space:
-                    //cubeArrangementModel.AnimationEnabled = !cubeArrangementModel.AnimationEnabled;
                     break;
             }
         }
@@ -97,6 +97,13 @@ namespace Projekt
 
             Gl.Enable(EnableCap.DepthTest);
             Gl.DepthFunc(DepthFunction.Lequal);
+
+            planeObject = new SceneObject
+            {
+                Position = new Vector3D<float>(0, 0, 0),
+                Rotation = new Vector3D<float>(0f, 180f, 0f),
+                Scale = new Vector3D<float>(0.4f, 0.4f, 0.4f)
+            };
 
             plane = PlaneDescriptor.CreatePlane(Gl);
 
@@ -168,7 +175,7 @@ namespace Projekt
         {
             Gl.BindVertexArray(plane.Vao);
 
-            Matrix4X4<float> scale = Matrix4X4.CreateScale(0.4f);
+            //Matrix4X4<float> scale = Matrix4X4.CreateScale(0.4f);
             Matrix4X4<float> modelMatrix = planeObject.GetModelMatrix();
 
             SetModelMatrix(modelMatrix);
@@ -220,7 +227,7 @@ namespace Projekt
             //imGuiController.Update((float)deltaTime);
             if (moveForward)
             {
-                var forward = planeObject.GetForwardDirection();
+                var forward = planeObject.GetForwardDirection() ;
                 var deltaMove = forward * (float)deltaTime * planeSpeed;
                 planeObject.Position -= deltaMove;
             }
