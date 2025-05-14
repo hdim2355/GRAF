@@ -19,6 +19,18 @@
     <EmbeddedResource Include="Resources\dodecahedron.obj" />
     <EmbeddedResource Include="Resources\gourd.obj" />
     <EmbeddedResource Include="Resources\power_lines.obj" />
+    <EmbeddedResource Include="Resources\consiar_obj.obj" />
+    <EmbeddedResource Include="Resources\minicooper.obj" />
+    <EmbeddedResource Include="Resources\alfa147.obj" />
+    <EmbeddedResource Include="Resources\lamp.obj" />
+    <EmbeddedResource Include="Resources\B17SILVER.obj" />
+    <EmbeddedResource Include="Resources\B17SILVER.mtl" />
+    <EmbeddedResource Include="Resources\B17GREEN.obj" />
+    <EmbeddedResource Include="Resources\B17GREEN.mtl" />
+    <EmbeddedResource Include="Resources\t55.obj" />
+    <EmbeddedResource Include="Resources\t55.c4D" />
+    <EmbeddedResource Include="Resources\t55.3ds" />
+    <EmbeddedResource Include="Resources\T-62A Main Battle Tank.obj" />
   </ItemGroup>
 
   <ItemGroup>
