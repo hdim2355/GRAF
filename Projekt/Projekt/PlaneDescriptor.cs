@@ -136,7 +136,7 @@ namespace Projekt
 
                     case "mtllib":
                         string mtlFileName = string.Join(" ", lineData);
-                        LoadMaterialLibrary("Szeminarium1_24_03_05_2.Resources." + mtlFileName, materials);
+                        LoadMaterialLibrary("Projekt.Resources." + mtlFileName, materials);
                         break;
                 }
             }

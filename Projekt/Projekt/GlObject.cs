@@ -14,6 +14,7 @@ namespace Projekt
         public uint Colors { get; private set; }
         public uint Indices { get; private set; }
         public uint IndexArrayLength { get; private set; }
+        public uint? Texture { get; set; } = new uint?();
 
         private GL Gl;
 

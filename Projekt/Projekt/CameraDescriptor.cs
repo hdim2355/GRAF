@@ -1,79 +1,24 @@
 ﻿
+using Projekt;
 using Silk.NET.Maths;
 
 namespace Szeminarium1_24_03_05_2
 {
     internal class CameraDescriptor
     {
-        public double DistanceToOrigin { get; private set; } = 1;
+        public Vector3D<float> Position = new Vector3D<float>(0, 0, 5);
+        public Vector3D<float> Target = Vector3D<float>.Zero;
 
-        public double AngleToZYPlane { get; private set; } = 0;
+        public Matrix4X4<float> ViewMatrix { get; private set; }
 
-        public double AngleToZXPlane { get; private set; } = 0;
-
-        const double DistanceScaleFactor = 1.1;
-
-        const double AngleChangeStepSize = Math.PI / 30 * 4;
-        public Vector3D<float> Position
+        public void FollowObject(SceneObject obj, float distanceBehind = 5.0f, float heightOffset = 2.0f)
         {
-            get
-            {
-                return GetPointFromAngles(DistanceToOrigin, AngleToZYPlane, AngleToZXPlane);
-            }
-        }
-        public Vector3D<float> UpVector
-        {
-            get
-            {
-                return Vector3D.Normalize(GetPointFromAngles(DistanceToOrigin, AngleToZYPlane, AngleToZXPlane + Math.PI / 2));
-            }
-        }
-        public Vector3D<float> Target
-        {
-            get
-            {
-                return Vector3D<float>.Zero;
-            }
-        }
+            Vector3D<float> forward = obj.GetForwardDirection();
+            Vector3D<float> behind = obj.Position - forward * distanceBehind;
+            Position = new Vector3D<float>(behind.X, behind.Y + heightOffset, behind.Z);
+            Target = obj.Position;
 
-        public void IncreaseZXAngle()
-        {
-            AngleToZXPlane += AngleChangeStepSize;
-        }
-
-        public void DecreaseZXAngle()
-        {
-            AngleToZXPlane -= AngleChangeStepSize;
-        }
-
-        public void IncreaseZYAngle()
-        {
-            AngleToZYPlane += AngleChangeStepSize;
-
-        }
-
-        public void DecreaseZYAngle()
-        {
-            AngleToZYPlane -= AngleChangeStepSize;
-        }
-
-        public void IncreaseDistance()
-        {
-            DistanceToOrigin = DistanceToOrigin * DistanceScaleFactor;
-        }
-
-        public void DecreaseDistance()
-        {
-            DistanceToOrigin = DistanceToOrigin / DistanceScaleFactor;
-        }
-
-        private static Vector3D<float> GetPointFromAngles(double distanceToOrigin, double angleToMinZYPlane, double angleToMinZXPlane)
-        {
-            var x = distanceToOrigin * Math.Cos(angleToMinZXPlane) * Math.Sin(angleToMinZYPlane);
-            var z = distanceToOrigin * Math.Cos(angleToMinZXPlane) * Math.Cos(angleToMinZYPlane);
-            var y = distanceToOrigin * Math.Sin(angleToMinZXPlane);
-
-            return new Vector3D<float>((float)x, (float)y, (float)z);
+            ViewMatrix = Matrix4X4.CreateLookAt(Position, Target, Vector3D<float>.UnitY);
         }
     }
 }
