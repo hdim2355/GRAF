@@ -1,24 +1,26 @@
-﻿
-using Projekt;
+﻿using Projekt;
 using Silk.NET.Maths;
 
 namespace Szeminarium1_24_03_05_2
 {
     internal class CameraDescriptor
     {
-        public Vector3D<float> Position = new Vector3D<float>(0, 0, 5);
-        public Vector3D<float> Target = Vector3D<float>.Zero;
+        private Vector3D<float> position = new(0, 2.5f, -3.5f);
+        private Vector3D<float> target = Vector3D<float>.Zero;
+        private Vector3D<float> upVector = Vector3D<float>.UnitY;
 
-        public Matrix4X4<float> ViewMatrix { get; private set; }
+        public Vector3D<float> Position => position;
+        public Vector3D<float> Target => target;
+        public Vector3D<float> UpVector => upVector;
 
-        public void FollowObject(SceneObject obj, float distanceBehind = 5.0f, float heightOffset = 2.0f)
+        public void FollowObject(SceneObject obj, float distanceBehind = -5.0f, float heightOffset = 2.0f)
         {
-            Vector3D<float> forward = obj.GetForwardDirection();
-            Vector3D<float> behind = obj.Position - forward * distanceBehind;
-            Position = new Vector3D<float>(behind.X, behind.Y + heightOffset, behind.Z);
-            Target = obj.Position;
+            var forward = obj.GetForwardDirection();
+            var up = obj.GetUpDirection();
 
-            ViewMatrix = Matrix4X4.CreateLookAt(Position, Target, Vector3D<float>.UnitY);
+            position = obj.Position - forward * distanceBehind + up * heightOffset;
+            target = obj.Position;
+            upVector = up;
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Projekt
             Scale = new Vector3D<float>(0.4f, 0.4f, 0.4f)
         };
 
-        private static float planeSpeed = 2.0f;
+        private static float planeSpeed = 4.0f;
 
         private static bool moveForward = false;
         static void Main(string[] args)
@@ -133,7 +133,7 @@ namespace Projekt
 
         private static unsafe void DrawSkyBox()
         {
-            var modelMatrixSkyBox = Matrix4X4.CreateScale(100f);
+            var modelMatrixSkyBox = Matrix4X4.CreateScale(1000f);
             SetModelMatrix(modelMatrixSkyBox);
 
             // set the texture

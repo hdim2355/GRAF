@@ -87,7 +87,7 @@ namespace Projekt
 
         public unsafe void SetProjectionMatrix(GL Gl,uint program)
         {
-            var projectionMatrix = Matrix4X4.CreatePerspectiveFieldOfView<float>((float)(Math.PI / 2), 1024f / 768f, 0.1f, 100);
+            var projectionMatrix = Matrix4X4.CreatePerspectiveFieldOfView<float>((float)(Math.PI / 2), 1024f / 768f, 0.1f, 1000);
             int location = Gl.GetUniformLocation(program, ProjectionMatrixVariableName);
 
             if (location == -1)

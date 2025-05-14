@@ -41,5 +41,18 @@ namespace Projekt
                 -MathF.Cos(yaw) * MathF.Cos(pitch)
             );
         }
+
+        public Vector3D<float> GetUpDirection()
+        {
+            float yaw = DegreesToRadians(Rotation.Y);
+            float pitch = DegreesToRadians(Rotation.X + 90); // +90 fokkal feljebb
+
+            return Vector3D.Normalize(new Vector3D<float>(
+                -MathF.Sin(yaw) * MathF.Cos(pitch),
+                 MathF.Sin(pitch),
+                -MathF.Cos(yaw) * MathF.Cos(pitch)
+            ));
+        }
+
     }
 }
