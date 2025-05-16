@@ -13,7 +13,7 @@ namespace Szeminarium1_24_03_05_2
         public Vector3D<float> Target => target;
         public Vector3D<float> UpVector => upVector;
 
-        public void FollowObject(SceneObject obj, float distanceBehind = -5.0f, float heightOffset = 2.0f)
+        public void FollowObject(SceneObject obj, float distanceBehind = -7.0f, float heightOffset = 2.0f)
         {
             var forward = obj.GetForwardDirection();
             var up = obj.GetUpDirection();

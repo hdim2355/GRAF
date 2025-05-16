@@ -4,6 +4,7 @@ using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using Szeminarium1_24_03_05_2;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace Projekt
 {
@@ -130,9 +131,9 @@ namespace Projekt
 
             groundObject = new SceneObject
             {
-                Position = new Vector3D<float>(0f, -0.1f, 0f),
+                Position = new Vector3D<float>(0f, -10.01f, 0f),
                 Rotation = new Vector3D<float>(0f, 0f, 0f),
-                Scale = new Vector3D<float>(100f, 1f, 100f)
+                Scale = new Vector3D<float>(1f, 1f, 1f)
             };
 
             skybox = SkyboxDescriptor.CreateSkyBox(Gl);
@@ -229,8 +230,9 @@ namespace Projekt
 
         private static unsafe void DrawGround()
         {
-            var modelMatrixSkyBox = Matrix4X4.CreateScale(1000f);
-            SetModelMatrix(modelMatrixSkyBox);
+            Matrix4X4<float> modelMatrix = groundObject.GetModelMatrix();
+
+            SetModelMatrix(modelMatrix);
 
             // set the texture
             int textureLocation = Gl.GetUniformLocation(program, TextureVariableName);
@@ -241,8 +243,8 @@ namespace Projekt
             // set texture 0
             Gl.Uniform1(textureLocation, 0);
             Gl.ActiveTexture(TextureUnit.Texture0);
-            Gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)GLEnum.Linear);
-            Gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)GLEnum.Linear);
+            //Gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)GLEnum.Linear);
+            //Gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)GLEnum.Linear);
             Gl.BindTexture(TextureTarget.Texture2D, ground.Texture.Value);
 
             DrawModelObject(ground);

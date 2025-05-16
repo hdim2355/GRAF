@@ -110,6 +110,9 @@ namespace Projekt
                 Gl.TexParameterI(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
                 Gl.TexParameterI(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
                 // unbinde texture
+                Gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)GLEnum.Linear);
+                Gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)GLEnum.Linear);
+
                 Gl.BindTexture(TextureTarget.Texture2D, 0);
             }
 
@@ -118,5 +121,5 @@ namespace Projekt
             return skyBoxGl;
         }
 
-}
+    }
 }
