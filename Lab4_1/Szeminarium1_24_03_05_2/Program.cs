@@ -135,8 +135,8 @@ namespace Szeminarium1_24_03_05_2
 
             glCube = GlObject.CreateCube(Gl);
 
-            glTeapot = ObjectResourceReader.CreateObjectFromResource(Gl, "cube.obj");
-            //glTeapot = ObjectResourceReader.CreateObjectFromResource(Gl, "B17SILVER.obj");
+            //glTeapot = ObjectResourceReader.CreateObjectFromResource(Gl, "t55.obj");
+            glTeapot = ObjectResourceReader.CreateObjectFromResource(Gl, "car.obj");
 
             LinkProgram();
         }

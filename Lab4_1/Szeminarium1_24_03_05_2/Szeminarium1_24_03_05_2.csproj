@@ -23,19 +23,18 @@
     <EmbeddedResource Include="Resources\minicooper.obj" />
     <EmbeddedResource Include="Resources\alfa147.obj" />
     <EmbeddedResource Include="Resources\lamp.obj" />
-    <EmbeddedResource Include="Resources\B17SILVER.obj" />
-    <EmbeddedResource Include="Resources\B17SILVER.mtl" />
-    <EmbeddedResource Include="Resources\B17GREEN.obj" />
-    <EmbeddedResource Include="Resources\B17GREEN.mtl" />
-    <EmbeddedResource Include="Resources\t55.obj" />
-    <EmbeddedResource Include="Resources\t55.c4D" />
-    <EmbeddedResource Include="Resources\t55.3ds" />
     <EmbeddedResource Include="Resources\T-62A Main Battle Tank.obj" />
+    <EmbeddedResource Include="Resources\Challenger 2 Mk.3 Main Battle Tank.obj" />
+    <EmbeddedResource Include="Resources\Leopard 2A4M Main Battle Tank.obj" />
+    <EmbeddedResource Include="Resources\car.obj" />
+    <EmbeddedResource Include="Resources\car.mtl" />
+    <EmbeddedResource Include="textures\car.jpg" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Silk.NET" Version="2.20.0" />
     <PackageReference Include="Silk.NET.OpenGL.Extensions.ImGui" Version="2.20.0" />
+    <PackageReference Include="StbImageSharp" Version="2.30.15" />
   </ItemGroup>
 
 </Project>

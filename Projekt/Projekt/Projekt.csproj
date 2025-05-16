@@ -14,20 +14,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Resources\skybox.jpg" />
     <None Remove="Resources\skybox2.png" />
     <None Remove="Resources\skybox2.jpg" />
     <None Include="Resources\B17SILVER.mtl" />
     <None Include="Resources\B17SILVER.obj" />
+    <None Include="Resources\Bomb_1.obj" />
     <None Include="Shaders\FragmentShader.frag" />
     <None Include="Shaders\VertexShader.vert" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\Bomb_1.obj" />
     <EmbeddedResource Include="Resources\B17SILVER.obj" />
     <EmbeddedResource Include="Resources\B17SILVER.mtl" />
     <EmbeddedResource Include="Shaders\FragmentShader.frag" />

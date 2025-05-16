@@ -7,7 +7,7 @@ using Silk.NET.Maths;
 
 namespace Projekt
 {
-    internal class SceneObject
+    public class SceneObject
     {
         public Vector3D<float> Position = Vector3D<float>.Zero;
         public Vector3D<float> Rotation = Vector3D<float>.Zero;
@@ -44,7 +44,7 @@ namespace Projekt
         public Vector3D<float> GetUpDirection()
         {
             float yaw = DegreesToRadians(Rotation.Y);
-            float pitch = DegreesToRadians(Rotation.X + 90); // +90 fokkal feljebb
+            float pitch = DegreesToRadians(Rotation.X + 90);
 
             return Vector3D.Normalize(new Vector3D<float>(
                 -MathF.Sin(yaw) * MathF.Cos(pitch),

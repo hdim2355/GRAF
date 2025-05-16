@@ -1,4 +1,5 @@
-﻿using Silk.NET.Input;
+﻿using System.Numerics;
+using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
@@ -14,6 +15,10 @@ namespace Projekt
 
         private static GlObject plane;
 
+        private static GlObject bomb;
+
+        private static GlObject propeller;
+
         private static GlObject skybox;
 
         private static ShaderDescriptor shaders;
@@ -27,14 +32,17 @@ namespace Projekt
 
         private const string TextureVariableName = "uTexture";
 
-        private static SceneObject planeObject = new SceneObject
-        {
-            Scale = new Vector3D<float>(0.4f, 0.4f, 0.4f)
-        };
+        private static SceneObject planeObject;
+
+        private static SceneObject propellerObject;
+
+        private static HashSet<Key> pressedKeys = new();
 
         private static float planeSpeed = 14.0f;
 
         private static bool moveForward = false;
+
+        private static List<BombInstance> activeBombs;
         static void Main(string[] args)
         {
             WindowOptions windowOptions = WindowOptions.Default;
@@ -55,31 +63,24 @@ namespace Projekt
 
         private static void Keyboard_KeyDown(IKeyboard keyboard, Key key, int arg3)
         {
-            switch (key)
+            pressedKeys.Add(key);
+
+            if (key == Key.Space)
             {
-                case Key.Left:
-                    planeObject.Rotation.Y += 5; 
-                    break;
-                case Key.Right:
-                    planeObject.Rotation.Y -= 5;
-                    break;
-                case Key.Up:
-                    planeObject.Rotation.X -= 5;
-                    break;
-                case Key.Down:
-                    planeObject.Rotation.X += 5;
-                    break;
-                case Key.Space:
-                    moveForward = !moveForward;
-                    break;
-                case Key.S:
-                    //camera.IncreaseZXAngle();
-                    break;
-                case Key.D:
-                    //camera.DecreaseZXAngle();
-                    Console.Write(camera.Position);
-                    break;
+                moveForward = !moveForward;
             }
+
+            if (key == Key.Enter)
+            {
+                var forward = planeObject.GetForwardDirection();
+                var initialVelocity = -forward * 10.0f;
+                var newBomb = new BombInstance(planeObject.Position, initialVelocity);
+                activeBombs.Add(newBomb);
+            }
+        }
+        private static void Keyboard_KeyUp(IKeyboard keyboard, Key key, int arg3)
+        {
+            pressedKeys.Remove(key);
         }
         private static void GraphicWindow_Load()
         {
@@ -89,6 +90,7 @@ namespace Projekt
             foreach (var keyboard in inputContext.Keyboards)
             {
                 keyboard.KeyDown += Keyboard_KeyDown;
+                keyboard.KeyUp += Keyboard_KeyUp;
             }
 
             Gl.ClearColor(System.Drawing.Color.White);
@@ -106,6 +108,19 @@ namespace Projekt
             };
 
             plane = PlaneDescriptor.CreatePlane(Gl);
+
+            bomb = BombDescriptor.CreateBomb(Gl);
+
+            activeBombs = new();
+
+            propeller = PropellerDescriptor.CreatePropeller(Gl);
+
+            propellerObject = new SceneObject
+            {
+                Position = new Vector3D<float>(-0.3f, 0.3f, -0.05f),
+                Rotation = new Vector3D<float>(0f, 180f, 0f),
+                Scale = new Vector3D<float>(0.2f, 0.2f, 0.2f)
+            };
 
             skybox = SkyboxDescriptor.CreateSkyBox(Gl);
 
@@ -129,15 +144,66 @@ namespace Projekt
             shaders.SetLight(Gl, camera, program);
             shaders.SetShininess(Gl, program);
 
-            Gl.DepthMask(false); // disable writing to depth buffer
+            
             DrawSkyBox();
-            Gl.DepthMask(true); // re-enable depth writing
 
-            DrawCenteredPulsingPlane();
+            foreach (var bombInstance in activeBombs)
+            {
+                DrawObject(bomb, bombInstance.Scene);
+            }
+
+            DrawObject(plane,planeObject);
+
+            DrawObject(propeller,propellerObject);
+
+            
 
             return; 
         }
 
+        private static unsafe void DrawObject(GlObject objects,SceneObject scene)
+        {
+            Gl.BindVertexArray(objects.Vao);
+
+            //Matrix4X4<float> scale = Matrix4X4.CreateScale(0.4f);
+            Matrix4X4<float> modelMatrix = scene.GetModelMatrix();
+
+            SetModelMatrix(modelMatrix);
+
+            Gl.DrawElements(PrimitiveType.Triangles, plane.IndexArrayLength, DrawElementsType.UnsignedInt, null);
+            Gl.BindVertexArray(0);
+        }
+        private static void GraphicWindow_Update(double deltaTime)
+        {
+            float rotationSpeed = 60f; // fok per másodperc
+            float moveSpeed = planeSpeed * (float)deltaTime;
+
+            if (pressedKeys.Contains(Key.Left))
+                planeObject.Rotation.Y += rotationSpeed * (float)deltaTime;
+
+            if (pressedKeys.Contains(Key.Right))
+                planeObject.Rotation.Y -= rotationSpeed * (float)deltaTime;
+
+            if (pressedKeys.Contains(Key.Up))
+                planeObject.Rotation.X -= rotationSpeed * (float)deltaTime;
+
+            if (pressedKeys.Contains(Key.Down))
+                planeObject.Rotation.X += rotationSpeed * (float)deltaTime;
+
+            if (moveForward)
+            {
+                var forward = planeObject.GetForwardDirection();
+                var deltaMove = forward * (float)deltaTime * planeSpeed;
+                planeObject.Position -= deltaMove;
+            }
+
+            foreach (var bomb in activeBombs)
+            {
+                bomb.Update((float)deltaTime);
+            }
+
+            camera.FollowObject(planeObject);
+        }
         private static unsafe void DrawSkyBox()
         {
             var modelMatrixSkyBox = Matrix4X4.CreateScale(1000f);
@@ -171,19 +237,6 @@ namespace Projekt
             Gl.BindBuffer(GLEnum.ElementArrayBuffer, 0);
             Gl.BindVertexArray(0);
         }
-        private static unsafe void DrawCenteredPulsingPlane()
-        {
-            Gl.BindVertexArray(plane.Vao);
-
-            //Matrix4X4<float> scale = Matrix4X4.CreateScale(0.4f);
-            Matrix4X4<float> modelMatrix = planeObject.GetModelMatrix();
-
-            SetModelMatrix(modelMatrix);
-
-            Gl.DrawElements(PrimitiveType.Triangles, plane.IndexArrayLength, DrawElementsType.UnsignedInt, null);
-            Gl.BindVertexArray(0);
-        }
-
         private static unsafe void SetModelMatrix(Matrix4X4<float> modelMatrix)
         {
             int location = Gl.GetUniformLocation(program, ModelMatrixVariableName);
@@ -218,28 +271,16 @@ namespace Projekt
             if (error != ErrorCode.NoError)
                 throw new Exception("GL.GetError() returned " + error.ToString());
         }
-        private static void GraphicWindow_Update(double deltaTime)
-        {
-            // NO OpenGL
-            // make it threadsafe
-            //cubeArrangementModel.AdvanceTime(deltaTime);
-
-            //imGuiController.Update((float)deltaTime);
-            if (moveForward)
-            {
-                var forward = planeObject.GetForwardDirection() ;
-                var deltaMove = forward * (float)deltaTime * planeSpeed;
-                planeObject.Position -= deltaMove;
-            }
-
-            camera.FollowObject(planeObject);
-        }
+        
         private static void GraphicWindow_Closing()
         {
 
             //cube.Dispose();
             //teapot.Dispose();
             plane.Release();
+            skybox.Release();
+            propeller.Release();
+            bomb.Release();
             Gl.DeleteProgram(program);
         }
 
