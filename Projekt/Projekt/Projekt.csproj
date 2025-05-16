@@ -22,6 +22,7 @@
     <None Include="Resources\Bomb_1.obj" />
     <None Include="Shaders\FragmentShader.frag" />
     <None Include="Shaders\VertexShader.vert" />
+    <None Include="Resources\Rock062_2K-PNG_Color.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +34,7 @@
     <EmbeddedResource Include="Resources\skybox.jpg" />
     <EmbeddedResource Include="Resources\skybox2.png" />
     <EmbeddedResource Include="Resources\skybox2.jpg" />
+    <EmbeddedResource Include="Resources\Rock062_2K-PNG_Color.png" />
   </ItemGroup>
   
 </Project>

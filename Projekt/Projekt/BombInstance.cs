@@ -30,6 +30,12 @@ namespace Projekt
         {
             velocity.Y += Gravity * deltaTime;
             Scene.Position += velocity * deltaTime;
+
+            if (Scene.Position.Y <= -10f)
+            {
+                Scene.Position.Y = -10f;
+                velocity = Vector3D<float>.Zero;
+            }
         }
     }
 }

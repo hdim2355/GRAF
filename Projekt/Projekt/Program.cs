@@ -13,14 +13,6 @@ namespace Projekt
 
         private static GL Gl;
 
-        private static GlObject plane;
-
-        private static GlObject bomb;
-
-        private static GlObject propeller;
-
-        private static GlObject skybox;
-
         private static ShaderDescriptor shaders;
 
         private static CameraDescriptor camera;
@@ -31,6 +23,18 @@ namespace Projekt
         private const string NormalMatrixVariableName = "uNormal";
 
         private const string TextureVariableName = "uTexture";
+
+        private static GlObject plane;
+
+        private static GlObject bomb;
+
+        private static GlObject propeller;
+
+        private static GlObject skybox;
+
+        private static GlObject ground;
+
+        private static SceneObject groundObject;
 
         private static SceneObject planeObject;
 
@@ -102,7 +106,7 @@ namespace Projekt
 
             planeObject = new SceneObject
             {
-                Position = new Vector3D<float>(0, 0, 0),
+                Position = new Vector3D<float>(0, 100, 0),
                 Rotation = new Vector3D<float>(0f, 180f, 0f),
                 Scale = new Vector3D<float>(0.4f, 0.4f, 0.4f)
             };
@@ -120,6 +124,15 @@ namespace Projekt
                 Position = new Vector3D<float>(-0.3f, 0.3f, -0.05f),
                 Rotation = new Vector3D<float>(0f, 180f, 0f),
                 Scale = new Vector3D<float>(0.2f, 0.2f, 0.2f)
+            };
+
+            ground = GroundDescriptor.CreateGround(Gl);
+
+            groundObject = new SceneObject
+            {
+                Position = new Vector3D<float>(0f, -0.1f, 0f),
+                Rotation = new Vector3D<float>(0f, 0f, 0f),
+                Scale = new Vector3D<float>(100f, 1f, 100f)
             };
 
             skybox = SkyboxDescriptor.CreateSkyBox(Gl);
@@ -144,8 +157,9 @@ namespace Projekt
             shaders.SetLight(Gl, camera, program);
             shaders.SetShininess(Gl, program);
 
-            
             DrawSkyBox();
+
+            DrawGround();
 
             foreach (var bombInstance in activeBombs)
             {
@@ -156,8 +170,6 @@ namespace Projekt
 
             DrawObject(propeller,propellerObject);
 
-            
-
             return; 
         }
 
@@ -165,13 +177,23 @@ namespace Projekt
         {
             Gl.BindVertexArray(objects.Vao);
 
-            //Matrix4X4<float> scale = Matrix4X4.CreateScale(0.4f);
+            if (objects.Texture.HasValue)
+            {
+                int textureLocation = Gl.GetUniformLocation(program, "uTexture");
+                Gl.Uniform1(textureLocation, 0);
+                Gl.ActiveTexture(TextureUnit.Texture0);
+                Gl.BindTexture(TextureTarget.Texture2D, objects.Texture.Value);
+            }
+
             Matrix4X4<float> modelMatrix = scene.GetModelMatrix();
 
             SetModelMatrix(modelMatrix);
 
-            Gl.DrawElements(PrimitiveType.Triangles, plane.IndexArrayLength, DrawElementsType.UnsignedInt, null);
+            Gl.DrawElements(PrimitiveType.Triangles, objects.IndexArrayLength, DrawElementsType.UnsignedInt, null);
             Gl.BindVertexArray(0);
+
+            if (objects.Texture.HasValue)
+                Gl.BindTexture(TextureTarget.Texture2D, 0);
         }
         private static void GraphicWindow_Update(double deltaTime)
         {
@@ -203,6 +225,31 @@ namespace Projekt
             }
 
             camera.FollowObject(planeObject);
+        }
+
+        private static unsafe void DrawGround()
+        {
+            var modelMatrixSkyBox = Matrix4X4.CreateScale(1000f);
+            SetModelMatrix(modelMatrixSkyBox);
+
+            // set the texture
+            int textureLocation = Gl.GetUniformLocation(program, TextureVariableName);
+            if (textureLocation == -1)
+            {
+                throw new Exception($"{TextureVariableName} uniform not found on shader.");
+            }
+            // set texture 0
+            Gl.Uniform1(textureLocation, 0);
+            Gl.ActiveTexture(TextureUnit.Texture0);
+            Gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)GLEnum.Linear);
+            Gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)GLEnum.Linear);
+            Gl.BindTexture(TextureTarget.Texture2D, ground.Texture.Value);
+
+            DrawModelObject(ground);
+
+            CheckError();
+            Gl.BindTexture(TextureTarget.Texture2D, 0);
+            CheckError();
         }
         private static unsafe void DrawSkyBox()
         {
@@ -281,6 +328,7 @@ namespace Projekt
             skybox.Release();
             propeller.Release();
             bomb.Release();
+            ground.Release();
             Gl.DeleteProgram(program);
         }
 
