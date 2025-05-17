@@ -9,16 +9,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ImGui.NET" Version="1.91.6.1" />
     <PackageReference Include="Silk.NET" Version="2.22.0" />
+    <PackageReference Include="Silk.NET.OpenGL.Extensions.ImGui" Version="2.22.0" />
     <PackageReference Include="StbImageSharp" Version="2.30.15" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\skybox.jpg" />
     <None Remove="Resources\skybox2.png" />
-    <None Remove="Resources\skybox2.jpg" />
     <None Include="Resources\B17SILVER.mtl" />
     <None Include="Resources\B17SILVER.obj" />
+    <None Include="Resources\9mm Luger.obj" />
+    <None Include="Resources\car.mtl" />
+    <None Include="Resources\car.obj" />
     <None Include="Resources\Bomb_1.obj" />
     <None Include="Shaders\FragmentShader.frag" />
     <None Include="Shaders\VertexShader.vert" />
@@ -29,13 +32,14 @@
   <ItemGroup>
   <EmbeddedResource Include="Resources\explosion.jpg" />
     <EmbeddedResource Include="Resources\Bomb_1.obj" />
+    <EmbeddedResource Include="Resources\9mm Luger.obj" />
     <EmbeddedResource Include="Resources\B17SILVER.obj" />
     <EmbeddedResource Include="Resources\B17SILVER.mtl" />
+    <EmbeddedResource Include="Resources\car.obj" />
+    <EmbeddedResource Include="Resources\car.mtl" />
     <EmbeddedResource Include="Shaders\FragmentShader.frag" />
     <EmbeddedResource Include="Shaders\VertexShader.vert" />
-    <EmbeddedResource Include="Resources\skybox.jpg" />
     <EmbeddedResource Include="Resources\skybox2.png" />
-    <EmbeddedResource Include="Resources\skybox2.jpg" />
     <EmbeddedResource Include="Resources\Rock062_2K-PNG_Color.png" />
   </ItemGroup>
   

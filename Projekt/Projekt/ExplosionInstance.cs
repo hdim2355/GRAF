@@ -47,7 +47,7 @@ namespace Projekt
             for (int i = particles.Count - 1; i >= 0; i--)
             {
                 var p = particles[i];
-                p.Velocity.Y += -9.81f * deltaTime; // gravity
+                p.Velocity.Y += -9.81f * deltaTime; 
                 p.Scene.Position += p.Velocity * deltaTime;
                 p.Lifetime -= deltaTime;
 

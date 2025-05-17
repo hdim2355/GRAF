@@ -5,11 +5,27 @@ using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using Szeminarium1_24_03_05_2;
 using static System.Formats.Asn1.AsnWriter;
+using Silk.NET.OpenGL.Extensions.ImGui;
 
 namespace Projekt
 {
     internal class Program
     {
+        enum WeaponType
+        {
+            Bomb,
+            Ammo
+        }
+
+        private static WeaponType currentWeapon = WeaponType.Bomb;
+
+        private static List<AmmoInstance> activeAmmos = new();
+
+        private static int maxAmmoCount = 30;
+        private static int currentAmmoCount = 30;
+
+        private static ImGuiController imguiController;
+
         private static IWindow graphicWindow;
 
         private static GL Gl;
@@ -27,6 +43,8 @@ namespace Projekt
 
         private static GlObject plane;
 
+        private static GlObject tank;
+
         private static GlObject bomb;
 
         private static GlObject propeller;
@@ -34,6 +52,8 @@ namespace Projekt
         private static GlObject skybox;
 
         private static GlObject ground;
+
+        private static GlObject ammo;
 
         private static GlObject explosionModel;
 
@@ -49,9 +69,15 @@ namespace Projekt
 
         private static float planeSpeed = 14.0f;
 
+        private static int maxBombCount = 5;
+
+        private static int currentBombCount = 5;
+
         private static bool moveForward = false;
 
         private static List<BombInstance> activeBombs;
+
+        private static List<SceneObject> tanks = new();
         static void Main(string[] args)
         {
             WindowOptions windowOptions = WindowOptions.Default;
@@ -74,17 +100,40 @@ namespace Projekt
         {
             pressedKeys.Add(key);
 
+            if (key == Key.Q)
+            {
+                if (currentWeapon == WeaponType.Bomb)
+                    currentWeapon = WeaponType.Ammo;
+                else
+                    currentWeapon = WeaponType.Bomb;
+            }
+
             if (key == Key.Space)
             {
-                moveForward = !moveForward;
+                if (currentWeapon == WeaponType.Bomb && currentBombCount > 0)
+                {
+                    var forward = planeObject.GetForwardDirection();
+                    var initialVelocity = -forward * 10.0f;
+                    var newBomb = new BombInstance(planeObject.Position, initialVelocity);
+                    activeBombs.Add(newBomb);
+                    currentBombCount--;
+                }
+                else if (currentWeapon == WeaponType.Ammo && currentAmmoCount > 0)
+                {
+                    var forward = planeObject.GetForwardDirection();
+                    var leftWing = planeObject.Position + Vector3D.Cross(planeObject.GetUpDirection(), forward) * 1.5f;
+                    var rightWing = planeObject.Position - Vector3D.Cross(planeObject.GetUpDirection(), forward) * 1.5f;
+
+                    activeAmmos.Add(new AmmoInstance(leftWing, -forward));
+                    activeAmmos.Add(new AmmoInstance(rightWing, -forward));
+
+                    currentAmmoCount -= 2;
+                }
             }
 
             if (key == Key.Enter)
             {
-                var forward = planeObject.GetForwardDirection();
-                var initialVelocity = -forward * 10.0f;
-                var newBomb = new BombInstance(planeObject.Position, initialVelocity);
-                activeBombs.Add(newBomb);
+                moveForward = !moveForward;
             }
         }
         private static void Keyboard_KeyUp(IKeyboard keyboard, Key key, int arg3)
@@ -96,6 +145,7 @@ namespace Projekt
             Gl = graphicWindow.CreateOpenGL();
 
             var inputContext = graphicWindow.CreateInput();
+
             foreach (var keyboard in inputContext.Keyboards)
             {
                 keyboard.KeyDown += Keyboard_KeyDown;
@@ -118,7 +168,32 @@ namespace Projekt
 
             plane = PlaneDescriptor.CreatePlane(Gl);
 
+            tank = TankDescriptor.CreatePlane(Gl);
+
             bomb = BombDescriptor.CreateBomb(Gl);
+
+            ammo = AmmoDescriptor.CreatePlane(Gl);
+
+            tanks.Add(new SceneObject
+            {
+                Position = new Vector3D<float>(100, -10, 100),
+                Rotation = new Vector3D<float>(0f, 180f, 0f),
+                Scale = new Vector3D<float>(3.4f, 3.4f, 3.4f)
+            });
+
+            tanks.Add(new SceneObject
+            {
+                Position = new Vector3D<float>(-100, -10, 80),
+                Rotation = new Vector3D<float>(0f, 0f, 0f),
+                Scale = new Vector3D<float>(3.4f, 3.4f, 3.4f)
+            });
+
+            tanks.Add(new SceneObject
+            {
+                Position = new Vector3D<float>(0, -10, -120),
+                Rotation = new Vector3D<float>(0f, 90f, 0f),
+                Scale = new Vector3D<float>(3.4f, 3.4f, 3.4f)
+            });
 
             activeBombs = new();
 
@@ -146,9 +221,11 @@ namespace Projekt
 
             shaders = new ShaderDescriptor();
 
-            //explosionModel = ExplosionDescriptor.CreateExplosion(Gl);
-            explosionModel = bomb;
+            explosionModel = ExplosionDescriptor.CreateExplosion(Gl);
+
             program = shaders.LinkProgram(Gl);
+
+            imguiController = new ImGuiController(Gl, graphicWindow, inputContext);
 
         }
         private static unsafe void GraphicWindow_Render(double deltaTime)
@@ -173,7 +250,18 @@ namespace Projekt
                 DrawObject(bomb, bombInstance.Scene);
             }
 
+            foreach (var ammos in activeAmmos)
+            {
+                DrawObject(ammo, ammos.Scene);
+            }
+
+
             DrawObject(plane,planeObject);
+
+            foreach (var t in tanks)
+            {
+                DrawObject(tank, t);
+            }
 
             foreach (var explosion in activeExplosions3D)
             {
@@ -185,6 +273,20 @@ namespace Projekt
 
 
             DrawObject(propeller,propellerObject);
+
+            imguiController.Update((float)deltaTime);
+
+            ImGuiNET.ImGui.Begin("HUD", ImGuiNET.ImGuiWindowFlags.NoTitleBar | ImGuiNET.ImGuiWindowFlags.NoResize | ImGuiNET.ImGuiWindowFlags.NoMove | ImGuiNET.ImGuiWindowFlags.NoBackground | ImGuiNET.ImGuiWindowFlags.NoScrollbar);
+            ImGuiNET.ImGui.SetWindowPos(new System.Numerics.Vector2(10, 10));
+            ImGuiNET.ImGui.SetWindowSize(new System.Numerics.Vector2(200, 50));
+            ImGuiNET.ImGui.Text($"Fegyver: {currentWeapon}");
+            if (currentWeapon == WeaponType.Bomb)
+                ImGuiNET.ImGui.Text($"Bombák száma: {currentBombCount}");
+            else
+                ImGuiNET.ImGui.Text($"Ammo száma: {currentAmmoCount}");
+            ImGuiNET.ImGui.End();
+
+            imguiController.Render();
 
             return; 
         }
@@ -217,7 +319,7 @@ namespace Projekt
         }
         private static void GraphicWindow_Update(double deltaTime)
         {
-            float rotationSpeed = 60f; // fok per másodperc
+            float rotationSpeed = 60f;
             float moveSpeed = planeSpeed * (float)deltaTime;
 
             if (pressedKeys.Contains(Key.Left))
@@ -231,7 +333,7 @@ namespace Projekt
 
             if (pressedKeys.Contains(Key.Down))
                 planeObject.Rotation.X += rotationSpeed * (float)deltaTime;
-
+            
             if (moveForward)
             {
                 var forward = planeObject.GetForwardDirection();
@@ -242,6 +344,34 @@ namespace Projekt
             foreach (var bomb in activeBombs)
             {
                 bomb.Update((float)deltaTime);
+            }
+
+            foreach (var ammo in activeAmmos)
+            {
+                ammo.Update((float)deltaTime);
+            }
+
+            //activeAmmos.RemoveAll(a => a.Scene.Position.Length() > 2000);
+
+            for (int i = activeBombs.Count - 1; i >= 0; i--)
+            {
+                var bomb = activeBombs[i];
+
+                if (bomb.HasExploded)
+                {
+                    TriggerExplosion(bomb.Scene.Position);
+
+                    // Töröljük a tankot, amelyik közel van
+                    for (int j = tanks.Count - 1; j >= 0; j--)
+                    {
+                        if (Vector3D.Distance(bomb.Scene.Position, tanks[j].Position) < 15f)
+                        {
+                            tanks.RemoveAt(j);
+                        }
+                    }
+
+                    activeBombs.RemoveAt(i);
+                }
             }
 
             for (int i = activeBombs.Count - 1; i >= 0; i--)
@@ -262,6 +392,17 @@ namespace Projekt
                 explosion.Update((float)deltaTime);
                 if (!explosion.IsAlive)
                     activeExplosions3D.Remove(explosion);
+            }
+        
+            float tankMoveSpeed = 10f * (float)deltaTime;
+
+            for (int i = 0; i < tanks.Count; i++)
+            {
+                var tank = tanks[i];
+
+                float offset = i * 3.14f / 1.5f; 
+                tank.Position.X += MathF.Sin((float)graphicWindow.Time + offset) * tankMoveSpeed * 0.5f;
+                tank.Position.Z += MathF.Cos((float)graphicWindow.Time + offset) * tankMoveSpeed * 0.5f;
             }
 
         }
@@ -361,15 +502,15 @@ namespace Projekt
         
         private static void GraphicWindow_Closing()
         {
-
-            //cube.Dispose();
-            //teapot.Dispose();
             plane.Release();
             skybox.Release();
             propeller.Release();
             bomb.Release();
             ground.Release();
             explosionModel.Release();
+            tank.Release();
+            ammo.Release();
+            imguiController.Dispose();
             Gl.DeleteProgram(program);
         }
 
