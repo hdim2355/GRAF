@@ -57,6 +57,8 @@ namespace Projekt
 
         private static GlObject explosionModel;
 
+        private static GlObject enemyPlane;
+
         private static SceneObject groundObject;
 
         private static SceneObject planeObject;
@@ -78,6 +80,13 @@ namespace Projekt
         private static List<BombInstance> activeBombs;
 
         private static List<SceneObject> tanks = new();
+
+        private static List<EnemyPlaneInstance> enemyPlanes = new();
+
+        private static List<Pickup> pickups = new();
+
+        private static GlObject ammoPickupModel;
+        private static GlObject bombPickupModel;
         static void Main(string[] args)
         {
             WindowOptions windowOptions = WindowOptions.Default;
@@ -174,6 +183,14 @@ namespace Projekt
 
             ammo = AmmoDescriptor.CreatePlane(Gl);
 
+            enemyPlane = PlaneDescriptor.CreatePlane(Gl);
+
+            ammoPickupModel = AmmoDescriptor.CreatePlane(Gl);  
+            bombPickupModel = BombDescriptor.CreateBomb(Gl);
+
+            pickups.Add(new Pickup(new Vector3D<float>(0, 20, 50), PickupType.Ammo));
+            pickups.Add(new Pickup(new Vector3D<float>(-30, 30, -50), PickupType.Bomb));
+
             tanks.Add(new SceneObject
             {
                 Position = new Vector3D<float>(100, -10, 100),
@@ -194,6 +211,10 @@ namespace Projekt
                 Rotation = new Vector3D<float>(0f, 90f, 0f),
                 Scale = new Vector3D<float>(3.4f, 3.4f, 3.4f)
             });
+
+            enemyPlanes.Add(new EnemyPlaneInstance(new Vector3D<float>(-50, 50, 0)));
+            enemyPlanes.Add(new EnemyPlaneInstance(new Vector3D<float>(80, 60, -100)));
+            enemyPlanes.Add(new EnemyPlaneInstance(new Vector3D<float>(-120, 55, 100)));
 
             activeBombs = new();
 
@@ -255,6 +276,11 @@ namespace Projekt
                 DrawObject(ammo, ammos.Scene);
             }
 
+            foreach (var pickup in pickups)
+            {
+                var model = pickup.Type == PickupType.Ammo ? ammoPickupModel : bombPickupModel;
+                DrawObject(model, pickup.Scene);
+            }
 
             DrawObject(plane,planeObject);
 
@@ -271,6 +297,10 @@ namespace Projekt
                 }
             }
 
+            foreach (var enemy in enemyPlanes)
+            {
+                DrawObject(enemyPlane, enemy.Scene);
+            }
 
             DrawObject(propeller,propellerObject);
 
@@ -351,7 +381,22 @@ namespace Projekt
                 ammo.Update((float)deltaTime);
             }
 
-            //activeAmmos.RemoveAll(a => a.Scene.Position.Length() > 2000);
+            for (int i = pickups.Count - 1; i >= 0; i--)
+            {
+                var pickup = pickups[i];
+                pickup.Update((float)deltaTime);
+
+                float distance = Vector3D.Distance(planeObject.Position, pickup.Scene.Position);
+                if (distance < 10f)
+                {
+                    if (pickup.Type == PickupType.Ammo)
+                        currentAmmoCount += 50;
+                    else if (pickup.Type == PickupType.Bomb)
+                        currentBombCount += 5;
+
+                    pickups.RemoveAt(i);
+                }
+            }
 
             for (int i = activeBombs.Count - 1; i >= 0; i--)
             {
@@ -403,6 +448,43 @@ namespace Projekt
                 float offset = i * 3.14f / 1.5f; 
                 tank.Position.X += MathF.Sin((float)graphicWindow.Time + offset) * tankMoveSpeed * 0.5f;
                 tank.Position.Z += MathF.Cos((float)graphicWindow.Time + offset) * tankMoveSpeed * 0.5f;
+            }
+
+            foreach (var enemy in enemyPlanes)
+            {
+                enemy.Update((float)deltaTime, graphicWindow.Time);
+            }
+
+            // Ammo vs EnemyPlane ellenőrzés
+            for (int i = activeAmmos.Count - 1; i >= 0; i--)
+            {
+                var ammo = activeAmmos[i];
+                bool hit = false;
+
+                for (int j = enemyPlanes.Count - 1; j >= 0; j--)
+                {
+                    var enemy = enemyPlanes[j];
+
+                    float distance = Vector3D.Distance(ammo.Scene.Position, enemy.Scene.Position);
+                    if (distance < 10f) // találati távolság
+                    {
+                        enemy.TakeDamage();
+                        hit = true;
+
+                        if (enemy.IsDestroyed)
+                        {
+                            TriggerExplosion(enemy.Scene.Position);
+                            enemyPlanes.RemoveAt(j);
+                        }
+
+                        break;
+                    }
+                }
+
+                if (hit)
+                {
+                    activeAmmos.RemoveAt(i);
+                }
             }
 
         }
@@ -510,6 +592,9 @@ namespace Projekt
             explosionModel.Release();
             tank.Release();
             ammo.Release();
+            enemyPlane.Release();
+            ammoPickupModel.Release();
+            bombPickupModel.Release();
             imguiController.Dispose();
             Gl.DeleteProgram(program);
         }
