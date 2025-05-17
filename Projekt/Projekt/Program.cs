@@ -35,6 +35,8 @@ namespace Projekt
 
         private static GlObject ground;
 
+        private static GlObject explosionModel;
+
         private static SceneObject groundObject;
 
         private static SceneObject planeObject;
@@ -42,6 +44,8 @@ namespace Projekt
         private static SceneObject propellerObject;
 
         private static HashSet<Key> pressedKeys = new();
+
+        private static List<ExplosionInstance> activeExplosions3D = new();
 
         private static float planeSpeed = 14.0f;
 
@@ -141,7 +145,9 @@ namespace Projekt
             camera = new CameraDescriptor();
 
             shaders = new ShaderDescriptor();
-            
+
+            //explosionModel = ExplosionDescriptor.CreateExplosion(Gl);
+            explosionModel = bomb;
             program = shaders.LinkProgram(Gl);
 
         }
@@ -169,11 +175,24 @@ namespace Projekt
 
             DrawObject(plane,planeObject);
 
+            foreach (var explosion in activeExplosions3D)
+            {
+                foreach (var particle in explosion.GetParticles())
+                {
+                    DrawObject(explosionModel, particle);
+                }
+            }
+
+
             DrawObject(propeller,propellerObject);
 
             return; 
         }
 
+        private static void TriggerExplosion(Vector3D<float> position)
+        {
+            activeExplosions3D.Add(new ExplosionInstance(position));
+        }
         private static unsafe void DrawObject(GlObject objects,SceneObject scene)
         {
             Gl.BindVertexArray(objects.Vao);
@@ -225,7 +244,26 @@ namespace Projekt
                 bomb.Update((float)deltaTime);
             }
 
+            for (int i = activeBombs.Count - 1; i >= 0; i--)
+            {
+                var bomb = activeBombs[i];
+
+                if (bomb.HasExploded)
+                {
+                    TriggerExplosion(bomb.Scene.Position);
+                    activeBombs.RemoveAt(i);
+                }
+            }
+
             camera.FollowObject(planeObject);
+
+            foreach (var explosion in activeExplosions3D.ToList())
+            {
+                explosion.Update((float)deltaTime);
+                if (!explosion.IsAlive)
+                    activeExplosions3D.Remove(explosion);
+            }
+
         }
 
         private static unsafe void DrawGround()
@@ -331,6 +369,7 @@ namespace Projekt
             propeller.Release();
             bomb.Release();
             ground.Release();
+            explosionModel.Release();
             Gl.DeleteProgram(program);
         }
 

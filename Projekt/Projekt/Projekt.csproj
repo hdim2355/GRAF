@@ -23,9 +23,11 @@
     <None Include="Shaders\FragmentShader.frag" />
     <None Include="Shaders\VertexShader.vert" />
     <None Include="Resources\Rock062_2K-PNG_Color.png" />
+    <None Include="Resources\explosion.jpg" />
   </ItemGroup>
 
   <ItemGroup>
+  <EmbeddedResource Include="Resources\explosion.jpg" />
     <EmbeddedResource Include="Resources\Bomb_1.obj" />
     <EmbeddedResource Include="Resources\B17SILVER.obj" />
     <EmbeddedResource Include="Resources\B17SILVER.mtl" />

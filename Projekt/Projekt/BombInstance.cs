@@ -13,7 +13,7 @@ namespace Projekt
 
         private Vector3D<float> velocity;
         private const float Gravity = -9.81f;
-
+        public bool HasExploded { get; private set; } = false;
         public BombInstance(Vector3D<float> startPosition, Vector3D<float> initialVelocity)
         {
             Scene = new SceneObject
@@ -31,10 +31,11 @@ namespace Projekt
             velocity.Y += Gravity * deltaTime;
             Scene.Position += velocity * deltaTime;
 
-            if (Scene.Position.Y <= -10f)
+            if (Scene.Position.Y <= -10f && !HasExploded)
             {
                 Scene.Position.Y = -10f;
                 velocity = Vector3D<float>.Zero;
+                HasExploded = true;
             }
         }
     }
