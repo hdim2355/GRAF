@@ -13,7 +13,7 @@ namespace Projekt
         public Vector3D<float> Rotation = Vector3D<float>.Zero;
         public Vector3D<float> Scale = new Vector3D<float>(1f, 1f, 1f);
 
-        private float DegreesToRadians(float degrees)
+        public float DegreesToRadians(float degrees)
         {
             return degrees * (MathF.PI / 180f);
         }

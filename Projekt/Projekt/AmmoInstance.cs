@@ -11,7 +11,7 @@ namespace Projekt
     {
         public SceneObject Scene;
         public Vector3D<float> Velocity;
-
+        
         public AmmoInstance(Vector3D<float> startPosition, Vector3D<float> direction)
         {
             Scene = new SceneObject

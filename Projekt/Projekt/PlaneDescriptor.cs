@@ -37,14 +37,14 @@ namespace Projekt
                 DiffuseColor = diffuse;
             }
         }
-        public static unsafe GlObject CreatePlane(GL Gl)
+        public static unsafe GlObject CreateObject(GL Gl,string res)
         {
             List<float[]> objVertices = new();
             List<float[]> objNormals = new();
             List<float[]> objTexCoords = new();
             Dictionary<string, MaterialData> materials = new();
 
-            string fullResourceName = "Projekt.Resources.B17SILVER.obj";
+            string fullResourceName = "Projekt.Resources."+res;
             string currentMaterial = "default";
 
             var vertexMap = new Dictionary<string, uint>();

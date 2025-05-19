@@ -12,10 +12,11 @@ namespace Projekt
         public SceneObject Scene;
         public int HitPoints = 6;
 
-        private float moveSpeed = 10f;
-        private float amplitude = 20f;
-        private float frequency = 2f;
-        private float baseZ;
+        private float frequency = 1.5f;
+
+        private Vector2D<float> center;
+        private float a = 60f; 
+        private float b = 30f; 
 
         public EnemyPlaneInstance(Vector3D<float> position)
         {
@@ -26,12 +27,19 @@ namespace Projekt
                 Scale = new Vector3D<float>(0.4f, 0.4f, 0.4f)
             };
 
-            baseZ = position.Z;
+            // Ellipszis középpont
+            center = new Vector2D<float>(position.X, position.Z);
         }
 
         public void Update(float deltaTime, double time)
         {
-            Scene.Position.Z = baseZ + MathF.Sin((float)time * frequency) * amplitude;
+            float angle = (float)time * frequency;
+
+            Scene.Position.X = MathF.Cos(angle) * a + center.X;
+            Scene.Position.Z = MathF.Sin(angle) * b + center.Y;
+
+            Vector2D<float> dir = new Vector2D<float>(-MathF.Sin(angle), MathF.Cos(angle));
+            Scene.Rotation.Y = MathF.Atan2(dir.X, dir.Y) * (180f / MathF.PI);
         }
 
         public void TakeDamage()
@@ -41,4 +49,5 @@ namespace Projekt
 
         public bool IsDestroyed => HitPoints <= 0;
     }
+
 }
