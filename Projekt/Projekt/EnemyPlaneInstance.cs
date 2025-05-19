@@ -16,7 +16,7 @@ namespace Projekt
 
         private Vector2D<float> center;
         private float a = 60f; 
-        private float b = 30f; 
+        private float b = 30f;
 
         public EnemyPlaneInstance(Vector3D<float> position)
         {
@@ -24,10 +24,9 @@ namespace Projekt
             {
                 Position = position,
                 Rotation = new Vector3D<float>(0f, 180f, 0f),
-                Scale = new Vector3D<float>(0.4f, 0.4f, 0.4f)
+                Scale = new Vector3D<float>(2.4f, 2.4f, 2.4f)
             };
 
-            // Ellipszis középpont
             center = new Vector2D<float>(position.X, position.Z);
         }
 

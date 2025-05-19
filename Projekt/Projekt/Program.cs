@@ -69,7 +69,7 @@ namespace Projekt
 
         private static List<ExplosionInstance> activeExplosions3D = new();
 
-        private static float planeSpeed = 34.0f;
+        private static float planeSpeed = 14.0f;
 
         private static int maxBombCount = 5;
 
@@ -88,7 +88,9 @@ namespace Projekt
         private static GlObject ammoPickupModel;
         private static GlObject bombPickupModel;
 
+        private static List<EnemyAmmoInstance> enemyAmmos = new();
 
+        private static PlayerPlane player;
 
         private static GlObject tankBody;
         private static GlObject tankWheel;
@@ -186,6 +188,8 @@ namespace Projekt
 
             plane = PlaneDescriptor.CreateObject(Gl,"B17SILVER.obj");
 
+            player = new PlayerPlane(planeObject);
+
             tank = PlaneDescriptor.CreateObject(Gl,"car.obj");
 
             bomb = PlaneDescriptor.CreateObject(Gl, "Bomb_1.obj");
@@ -199,10 +203,14 @@ namespace Projekt
 
             generatePickUps();
 
-            tanks.Add(new TankInstance(new Vector3D<float>(-100, -10, -100), new Vector3D<float>(0f, 0f, 0f))
+            for (int i = 0; i < 10; i++)
             {
-                Velocity = new Vector3D<float>(4f, 3f, 2f) 
-            });
+                tanks.Add(new TankInstance(new Vector3D<float>(-100, -10, -100), new Vector3D<float>(0f, 0f, 0f),
+                    new Vector3D<float>(-i*40, 0, -(i % 2 + 1) * 40))
+                {
+                    Velocity = new Vector3D<float>(4f, 3f, 2f)
+                });
+            }
 
 
             enemyPlanes.Add(new EnemyPlaneInstance(new Vector3D<float>(-50, 50, 0)));
@@ -311,6 +319,10 @@ namespace Projekt
                 DrawObject(enemyPlane, enemy.Scene);
             }
 
+            foreach (var ammos in enemyAmmos)
+            {
+                DrawObject(ammo, ammos.Scene); 
+            }
             //DrawObject(propeller,propellerObject);
 
             imguiController.Update((float)deltaTime);
@@ -421,7 +433,28 @@ namespace Projekt
                 tank.CurrentAngle = MathF.Atan2(dx, dz) * (180f / MathF.PI);
                 tank.TankBody.Rotation.Y = tank.CurrentAngle;
 
-                tank.Update((float)deltaTime);
+                tank.Update((float)deltaTime, graphicWindow.Time, player.Scene.Position, enemyAmmos);
+            }
+
+            for (int i = enemyAmmos.Count - 1; i >= 0; i--)
+            {
+                var ammo = enemyAmmos[i];
+                ammo.Update((float)deltaTime);
+
+                float distance = Vector3D.Distance(ammo.Scene.Position, player.Scene.Position);
+                if (distance < 5f)
+                {
+                    player.TakeDamage();
+                    TriggerExplosion(player.Scene.Position);
+                    enemyAmmos.RemoveAt(i);
+                    continue;
+                }
+
+                // (opcionálisan: ha túl messzire megy, töröljük)
+                if (ammo.Scene.Position.Length > 1000f)
+                {
+                    enemyAmmos.RemoveAt(i);
+                }
             }
 
             for (int i = activeBombs.Count - 1; i >= 0; i--)
