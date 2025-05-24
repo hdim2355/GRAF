@@ -12,7 +12,7 @@ namespace Projekt
     {
         public SceneObject Scene;
         public PickupType Type;
-        private float rotationSpeed = 90f; // fok/sec
+        private float rotationSpeed = 90f;
 
         public Pickup(Vector3D<float> position, PickupType type,Vector3D<float> scale)
         {

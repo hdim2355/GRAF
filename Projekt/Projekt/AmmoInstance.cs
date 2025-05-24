@@ -21,7 +21,7 @@ namespace Projekt
                 Scale = new Vector3D<float>(10.1f, 10.1f, 10.1f)
             };
 
-            Velocity = direction * 60f; // gyorsabb mint a bomba
+            Velocity = direction * 60f;
         }
 
         public void Update(float deltaTime)

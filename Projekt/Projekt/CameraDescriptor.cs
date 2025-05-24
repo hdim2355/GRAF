@@ -5,15 +5,18 @@ namespace Szeminarium1_24_03_05_2
 {
     internal class CameraDescriptor
     {
-        private Vector3D<float> position = new(0, 2.5f, -3.5f);
+        private Vector3D<float> position = new(0, 480.0f, 0f);
         private Vector3D<float> target = Vector3D<float>.Zero;
         private Vector3D<float> upVector = Vector3D<float>.UnitY;
 
+        public float distanceBehind { get; set; } = -1.0f;
+        public float heightOffset { get; set; } = 0.0f;
+        public Vector3D<float> GetVector() { return position; }
         public Vector3D<float> Position => position;
         public Vector3D<float> Target => target;
         public Vector3D<float> UpVector => upVector;
 
-        public void FollowObject(SceneObject obj, float distanceBehind = -7.0f, float heightOffset = 2.0f)
+        public void FollowObject(SceneObject obj)
         {
             var forward = obj.GetForwardDirection();
             var up = obj.GetUpDirection();

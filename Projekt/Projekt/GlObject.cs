@@ -30,7 +30,6 @@ namespace Projekt
 
         public void Release()
         {
-            // always unbound the vertex buffer first, so no halfway results are displayed by accident
             Gl.DeleteBuffer(Vertices);
             Gl.DeleteBuffer(Colors);
             Gl.DeleteBuffer(Indices);

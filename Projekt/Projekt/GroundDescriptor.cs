@@ -60,9 +60,6 @@ namespace Projekt
             uint vertices = Gl.GenBuffer();
             Gl.BindBuffer(GLEnum.ArrayBuffer, vertices);
             Gl.BufferData(GLEnum.ArrayBuffer, (ReadOnlySpan<float>)vertexArray.AsSpan(), GLEnum.StaticDraw);
-            // 0 is position
-            // 2 is normals
-            // 3 is texture
             uint offsetPos = 0;
             uint offsetNormals = offsetPos + 3 * sizeof(float);
             uint offsetTexture = offsetNormals + 3 * sizeof(float);

@@ -75,7 +75,6 @@ namespace Projekt
             Gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, indices);
             Gl.BufferData(BufferTargetARB.ElementArrayBuffer, (ReadOnlySpan<uint>)indexArray.AsSpan(), BufferUsageARB.StaticDraw);
 
-            // Textúra betöltés
             uint texture = Gl.GenTexture();
             Gl.BindTexture(TextureTarget.Texture2D, texture);
             Gl.TexImage2D(TextureTarget.Texture2D, 0, InternalFormat.Rgba, (uint)textureImage.Width,

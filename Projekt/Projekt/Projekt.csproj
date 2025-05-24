@@ -17,27 +17,31 @@
 
   <ItemGroup>
     <None Remove="Resources\skybox2.png" />
-    <None Include="Resources\B17SILVER.mtl" />
-    <None Include="Resources\B17SILVER.obj" />
-    <None Include="Resources\9mm Luger.obj" />
-    <None Include="Resources\car.mtl" />
-    <None Include="Resources\car.obj" />
-    <None Include="Resources\Bomb_1.obj" />
-    <None Include="Shaders\FragmentShader.frag" />
-    <None Include="Shaders\VertexShader.vert" />
-    <None Include="Resources\Rock062_2K-PNG_Color.png" />
-    <None Include="Resources\explosion.jpg" />
-    <None Include="Resources\kerek_jobb_hatso_004.obj" />
-    <None Include="Resources\kerek_jobb_elso_003.obj" />
-    <None Include="Resources\kerek_bal_hatso_001.obj" />
-    <None Include="Resources\kerek_bal_elso_002.obj" />
-    <None Include="Resources\auto.obj" />
-    <None Include="Resources\city.mtl" />
-    <None Include="Resources\city.obj" />
+    <None Remove="Resources\B17SILVER.mtl" />
+    <None Remove="Resources\B17SILVER.obj" />
+    <None Remove="Resources\9mm Luger.obj" />
+    <None Remove="Resources\car.mtl" />
+    <None Remove="Resources\car.obj" />
+    <None Remove="Resources\Bomb_1.obj" />
+    <None Remove="Shaders\FragmentShader.frag" />
+    <None Remove="Shaders\VertexShader.vert" />
+    <None Remove="Resources\Rock062_2K-PNG_Color.png" />
+    <None Remove="Resources\explosion.jpg" />
+    <None Remove="Resources\kerek_jobb_hatso_004.obj" />
+    <None Remove="Resources\kerek_jobb_elso_003.obj" />
+    <None Remove="Resources\kerek_bal_hatso_001.obj" />
+    <None Remove="Resources\kerek_bal_elso_002.obj" />
+    <None Remove="Resources\auto.obj" />
+    <None Remove="Resources\city.mtl" />
+    <None Remove="Resources\city.obj" />
+    <None Remove="Resources\city.jpg" />
+    <None Remove="Resources\car.jpg" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\city.obj" />
+    <EmbeddedResource Include="Resources\city.jpg" />
+    <EmbeddedResource Include="Resources\car.jpg" />
     <EmbeddedResource Include="Resources\city.mtl" />
     <EmbeddedResource Include="Resources\kerek_jobb_hatso_004.obj" />
     <EmbeddedResource Include="Resources\kerek_jobb_elso_003.obj" />

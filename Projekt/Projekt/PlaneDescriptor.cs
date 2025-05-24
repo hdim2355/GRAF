@@ -104,7 +104,7 @@ namespace Projekt
                                     }
                                     else
                                     {
-                                        uniqueNormals.AddRange([0, 0, 0]); // fallback
+                                        uniqueNormals.AddRange([0, 0, 0]);
                                     }
 
                                     if (ti >= 0 && ti < objTexCoords.Count)

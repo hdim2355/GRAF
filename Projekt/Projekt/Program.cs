@@ -6,6 +6,7 @@ using Silk.NET.Windowing;
 using Szeminarium1_24_03_05_2;
 using static System.Formats.Asn1.AsnWriter;
 using Silk.NET.OpenGL.Extensions.ImGui;
+using ImGuiNET;
 
 namespace Projekt
 {
@@ -21,8 +22,7 @@ namespace Projekt
 
         private static List<AmmoInstance> activeAmmos = new();
 
-        private static int maxAmmoCount = 30;
-        private static int currentAmmoCount = 30;
+        private static int currentAmmoCount = 150;
 
         private static ImGuiController imguiController;
 
@@ -47,7 +47,11 @@ namespace Projekt
 
         private static GlObject bomb;
 
-        //private static GlObject propeller;
+        private static GlObject propeller;
+
+        //private static GlObject airport;
+
+        //private static SceneObject airportObject;
 
         private static GlObject skybox;
 
@@ -120,9 +124,15 @@ namespace Projekt
             if (key == Key.Q)
             {
                 if (currentWeapon == WeaponType.Bomb)
+                {
                     currentWeapon = WeaponType.Ammo;
+                    planeSpeed = 34.0f;
+                }
                 else
+                {
                     currentWeapon = WeaponType.Bomb;
+                    planeSpeed = 14.0f;
+                }
             }
 
             if (key == Key.Space)
@@ -151,6 +161,16 @@ namespace Projekt
             if (key == Key.Enter)
             {
                 moveForward = !moveForward;
+                if (camera.distanceBehind == -1.0f)
+                {
+                    camera.distanceBehind = -7.0f;
+                    camera.heightOffset = 2.0f;
+                }
+                else
+                {
+                    camera.distanceBehind = -1.0f;
+                    camera.heightOffset = 0.0f;
+                }
             }
         }
         private static void Keyboard_KeyUp(IKeyboard keyboard, Key key, int arg3)
@@ -181,7 +201,7 @@ namespace Projekt
 
             planeObject = new SceneObject
             {
-                Position = new Vector3D<float>(0, 100, 0),
+                Position = new Vector3D<float>(-400, 200, 400),
                 Rotation = new Vector3D<float>(0f, 180f, 0f),
                 Scale = new Vector3D<float>(0.4f, 0.4f, 0.4f)
             };
@@ -191,6 +211,8 @@ namespace Projekt
             player = new PlayerPlane(planeObject);
 
             tank = PlaneDescriptor.CreateObject(Gl,"car.obj");
+
+            //tank = AirportDescriptor.CreateAirportObject(Gl);
 
             bomb = PlaneDescriptor.CreateObject(Gl, "Bomb_1.obj");
 
@@ -212,10 +234,14 @@ namespace Projekt
                 });
             }
 
-
-            enemyPlanes.Add(new EnemyPlaneInstance(new Vector3D<float>(-50, 50, 0)));
-            enemyPlanes.Add(new EnemyPlaneInstance(new Vector3D<float>(80, 60, -100)));
-            enemyPlanes.Add(new EnemyPlaneInstance(new Vector3D<float>(-120, 55, 100)));
+            for (int i = 0; i < 4; i++)
+            {
+                int j = -1;
+                enemyPlanes.Add(new EnemyPlaneInstance(new Vector3D<float>(-j*100, i*100+50, -j*100)));
+                j = 1;
+                enemyPlanes.Add(new EnemyPlaneInstance(new Vector3D<float>(-j * 100, i * 100 + 50, -j * 100)));
+                enemyPlanes.Add(new EnemyPlaneInstance(new Vector3D<float>((i + j) * 100, i * 100 + 50, -(i + j) * 100)));
+            }
 
             activeBombs = new();
 
@@ -236,6 +262,15 @@ namespace Projekt
                 Rotation = new Vector3D<float>(0f, 0f, 0f),
                 Scale = new Vector3D<float>(1f, 1f, 1f)
             };
+
+            //airport = AirportDescriptor.CreateAirportObject(Gl);
+
+            //airportObject = new SceneObject
+            //{
+            //    Position = new Vector3D<float>(-0.3f, 200.0f, 0.05f),
+            //    Rotation = new Vector3D<float>(180f, 110f, 50f),
+            //    Scale = new Vector3D<float>(1f, 1f, 1f)
+            //};
 
             skybox = SkyboxDescriptor.CreateSkyBox(Gl);
 
@@ -266,6 +301,7 @@ namespace Projekt
             }
         }
 
+ 
         private static unsafe void GraphicWindow_Render(double deltaTime)
         {
 
@@ -276,12 +312,16 @@ namespace Projekt
 
             shaders.setViewMatrix(Gl,camera,program);
             shaders.SetProjectionMatrix(Gl, program);
-            shaders.SetLight(Gl, camera, program);
+            shaders.SetLight(Gl,camera, program);
             shaders.SetShininess(Gl, program);
 
             DrawSkyBox();
 
             DrawGround();
+
+            
+            //DrawAirport();
+                
 
             foreach (var bombInstance in activeBombs)
             {
@@ -348,19 +388,22 @@ namespace Projekt
         }
         private static unsafe void DrawObject(GlObject objects,SceneObject scene)
         {
+            Matrix4X4<float> modelMatrix = scene.GetModelMatrix();
+
+            SetModelMatrix(modelMatrix);
+
             Gl.BindVertexArray(objects.Vao);
 
             if (objects.Texture.HasValue)
             {
-                int textureLocation = Gl.GetUniformLocation(program, "uTexture");
+                int textureLocation = Gl.GetUniformLocation(program, TextureVariableName);
                 Gl.Uniform1(textureLocation, 0);
                 Gl.ActiveTexture(TextureUnit.Texture0);
                 Gl.BindTexture(TextureTarget.Texture2D, objects.Texture.Value);
+                DrawModelObject(objects);
+                Gl.BindTexture(TextureTarget.Texture2D, 0);
+                return;
             }
-
-            Matrix4X4<float> modelMatrix = scene.GetModelMatrix();
-
-            SetModelMatrix(modelMatrix);
 
             Gl.DrawElements(PrimitiveType.Triangles, objects.IndexArrayLength, DrawElementsType.UnsignedInt, null);
             Gl.BindVertexArray(0);
@@ -450,7 +493,6 @@ namespace Projekt
                     continue;
                 }
 
-                // (opcionálisan: ha túl messzire megy, töröljük)
                 if (ammo.Scene.Position.Length > 1000f)
                 {
                     enemyAmmos.RemoveAt(i);
@@ -535,6 +577,7 @@ namespace Projekt
 
         }
 
+        
         private static unsafe void DrawGround()
         {
             Matrix4X4<float> modelMatrix = groundObject.GetModelMatrix();
@@ -550,8 +593,6 @@ namespace Projekt
             // set texture 0
             Gl.Uniform1(textureLocation, 0);
             Gl.ActiveTexture(TextureUnit.Texture0);
-            //Gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)GLEnum.Linear);
-            //Gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)GLEnum.Linear);
             Gl.BindTexture(TextureTarget.Texture2D, ground.Texture.Value);
 
             DrawModelObject(ground);
@@ -642,6 +683,7 @@ namespace Projekt
             bombPickupModel.Release();
             tankBody.Release();
             tankWheel.Release();
+            //airport.Release();
             imguiController.Dispose();
             Gl.DeleteProgram(program);
         }

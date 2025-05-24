@@ -115,7 +115,7 @@ namespace Projekt
             {
                 throw new Exception($"{LightPositionVariableName} uniform not found on shader.");
             }
-            Gl.Uniform3(location, 0f, 1.5f, 0f);
+            Gl.Uniform3(location, 100f, 500.0f, 100f);
             CheckError(Gl);
 
             location = Gl.GetUniformLocation(program, ViewPosVariableName);
